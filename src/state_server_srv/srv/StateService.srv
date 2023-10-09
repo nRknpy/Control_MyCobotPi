@@ -1,4 +1,0 @@
-string state_type
----
-float32[] states
-int32 gripper

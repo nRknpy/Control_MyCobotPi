@@ -12,10 +12,10 @@ class ImageListener(Node):
         video_qos = rclpy.qos.QoSProfile(depth=10)
         video_qos.reliability = rclpy.qos.QoSReliabilityPolicy.BEST_EFFORT
         self.listener = self.create_subscription(
-            Image, '/camera/color/image_raw', self.on_subscribe, video_qos)
+            Image, '/color/image_raw', self.on_subscribe, video_qos)
 
     def on_subscribe(self, msg):
-        img = CvBridge().imgmsg_to_cv2(img)
+        img = CvBridge().imgmsg_to_cv2(msg)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         cv2.imshow('Image', img)
         cv2.waitKey(1)
