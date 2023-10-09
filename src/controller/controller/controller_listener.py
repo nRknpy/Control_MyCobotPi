@@ -15,7 +15,7 @@ class ControllerListener(Node):
         self.angles = self.mc.get_angles()
         self.coords = self.mc.get_coords()
 
-        self.speed = 80
+        self.speed = 90
         self.gripper_value = 0
         self.prev_action = 'stop'
 
