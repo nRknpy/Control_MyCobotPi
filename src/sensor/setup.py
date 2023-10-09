@@ -20,6 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'joint_talker = sensor.joint_talker:main',
+            'sensor_listener = sensor.sensor_listener:main',
         ],
     },
 )
