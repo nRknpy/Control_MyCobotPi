@@ -11,6 +11,5 @@ def generate_launch_description():
         Node(
             package='sensor',
             executable='sensor_listener',
-            required=True,
         )
     ])
