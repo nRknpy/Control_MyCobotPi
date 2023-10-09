@@ -62,7 +62,7 @@ class ControllerListener(Node):
         # self.get_logger().info(f'{action}')
 
         pub_msg = MyCobotMsg()
-        pub_msg.header.stamp = self.get_clock().now().to_msg()
+        # pub_msg.header.stamp = self.get_clock().now().to_msg()
         pub_msg.joints = self.mc.get_angles()
         pub_msg.gripper = self.mc.get_gripper_value()
 

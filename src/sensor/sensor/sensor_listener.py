@@ -25,6 +25,7 @@ class SensorListener(Node):
             [self.img_sub, self.joint_sub],
             queue_size,
             0.01,
+            allow_headerless=True
         )
         self.ts.registerCallback(self.callback)
 
