@@ -34,3 +34,15 @@ class SensorListener(Node):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         cv2.imshow('Image', img)
         cv2.waitKey(1)
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = SensorListener()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
