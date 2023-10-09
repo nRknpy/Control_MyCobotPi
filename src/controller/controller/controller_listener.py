@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String
 from sensor_msgs.msg import Joy
+from mycobot_msg.msg import MyCobotMsg
 from pymycobot import MyCobot, PI_PORT, PI_BAUD
 import time
 import atexit
@@ -19,8 +19,13 @@ class ControllerListener(Node):
         self.gripper_value = 0
         self.prev_action = 'stop'
 
-        self.listener = self.create_subscription(Joy, 'joy', self.on_subscribe, 10)
-    
+        self.listener = self.create_subscription(
+            Joy, 'joy', self.on_subscribe, 10)
+
+        qos = rclpy.qos.QoSProfile(depth=10)
+        qos.reliability = rclpy.qos.QoSReliabilityPolicy.BEST_EFFORT
+        self.publisher = self.create_publisher(MyCobotMsg, '/mc_joints', qos)
+
     def joy2action(self, joy):
         if joy.buttons[5]:
             return 'move_to_default'
@@ -56,6 +61,12 @@ class ControllerListener(Node):
         action = self.joy2action(msg)
         # self.get_logger().info(f'{action}')
 
+        pub_msg = MyCobotMsg()
+        pub_msg.joints = self.mc.get_angles()
+        pub_msg.gripper = self.mc.get_gripper_value()
+
+        self.publisher.publish(pub_msg)
+
         print(self.mc.get_angles())
 
         if action == 'stop':
@@ -65,24 +76,26 @@ class ControllerListener(Node):
         elif action == 'move_to_default':
             self.prev_action = action
             # self.mc.send_angles([-0.17, -10, -133.24, 60.99, 0.17, 50.36], self.speed)
-            self.mc.send_coords([186.9, -51.0, 116.6, -177.44, 20, -136.52], self.speed)
+            self.mc.send_coords(
+                [186.9, -51.0, 116.6, -177.44, 20, -136.52], self.speed)
             time.sleep(3)
             self.angles = self.mc.get_angles()
             self.coords = self.mc.get_coords()
         elif action == 'move_to_home':
             self.prev_action = action
-            self.mc.sync_send_angles([1.49, 123.48, -148.09, -32.78, 1.84, 55.45], 70)
+            self.mc.sync_send_angles(
+                [1.49, 123.48, -148.09, -32.78, 1.84, 55.45], 70)
             time.sleep(3)
             self.angles = self.mc.get_angles()
             self.coords = self.mc.get_coords()
-        
+
         elif action == 'grip_on':
             # self.mc.set_gripper_state(1, self.speed)
             self.mc.set_gripper_value(100, self.speed)
         elif action == 'grip_off':
             # self.mc.set_gripper_state(0, self.speed)
             self.mc.set_gripper_value(0, self.speed)
-        
+
         elif action == 'x-':
             self.prev_action = action
             # self.angles[0] += 2
