@@ -16,3 +16,7 @@ pygame = "*"
 
 [requires]
 python_version = "3.8"
+
+[scripts]
+run_mc = "ros2 launch src/launch/mycobot_launch.py"
+run_master = "ros2 launch src/launch/master_launch.py"
