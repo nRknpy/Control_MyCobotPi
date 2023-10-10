@@ -5,6 +5,8 @@ from sensor_msgs.msg import Image
 from mycobot_msg.msg import MyCobotMsg
 from cv_bridge import CvBridge
 import cv2
+import numpy as np
+from PIL import Image
 
 
 class SensorListener(Node):
@@ -30,7 +32,8 @@ class SensorListener(Node):
         self.ts.registerCallback(self.callback)
 
     def callback(self, img_msg, joint_msg):
-        self.get_logger().info(f'{joint_msg.joints}, {joint_msg.gripper}')
+        self.get_logger().info(
+            f'{np.array(joint_msg.joints)}, {joint_msg.gripper}')
         img = CvBridge().imgmsg_to_cv2(img_msg)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         cv2.imshow('Image', img)

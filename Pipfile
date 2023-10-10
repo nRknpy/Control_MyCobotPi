@@ -11,6 +11,10 @@ catkin-pkg = "*"
 pymycobot = "*"
 opencv-python = "*"
 pygame = "*"
+torch = "*"
+torchvision = "*"
+torchaudio = "*"
+pillow = "*"
 
 [dev-packages]
 
