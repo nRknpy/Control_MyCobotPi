@@ -25,7 +25,7 @@ class JointCoordTalker(Node):
         joints = self.mc.get_angles()
         coords = self.mc.get_coords()
         radian = self.mc.get_radians()
-        gripper = self.mc.set_gripper_value()
+        gripper = self.mc.get_gripper_value()
 
         joints_msg = MyCobotMsg()
         coords_msg = MyCobotMsg()
