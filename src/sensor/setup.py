@@ -22,6 +22,8 @@ setup(
         'console_scripts': [
             'joint_talker = sensor.joint_talker:main',
             'sensor_listener = sensor.sensor_listener:main',
+            'joint_coord_talker = sensor.joint_coord_talker:main',
+            'joint_coord_listener = sensor.joint_coord_listener:main',
         ],
     },
 )
