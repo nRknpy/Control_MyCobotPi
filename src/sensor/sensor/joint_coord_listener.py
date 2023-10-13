@@ -17,7 +17,7 @@ class JointCoordListener(Node):
         qos.reliability = rclpy.qos.QoSReliabilityPolicy.BEST_EFFORT
 
         self.coords_sub = Subscriber(
-            self, Image, '/mc_coords', qos_profile=qos)
+            self, MyCobotMsg, '/mc_coords', qos_profile=qos)
         self.joint_sub = Subscriber(
             self, MyCobotMsg, '/mc_joints', qos_profile=qos)
         self.radian_sub = Subscriber(
@@ -26,16 +26,16 @@ class JointCoordListener(Node):
         queue_size = 30
 
         self.ts = ApproximateTimeSynchronizer(
-            [self.coords_sub, self.joint_sub],
+            [self.coords_sub, self.joint_sub, self.radian_sub],
             queue_size,
             0.01,
             allow_headerless=True
         )
         self.ts.registerCallback(self.callback)
 
-    def callback(self, coords_msg, joint_msg):
+    def callback(self, coords_msg, joint_msg, radian_msg):
         self.get_logger().info(
-            f'joint: {np.array(joint_msg.joints)}\ncoords: {np.array(coords_msg.joints)}')
+            f'joint: {np.array(joint_msg.joints)}\ncoords: {np.array(coords_msg.joints)}\nradian: {np.array(radian_msg.joints)}')
 
 
 def main(args=None):

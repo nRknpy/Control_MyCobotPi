@@ -13,7 +13,6 @@ class JointCoordTalker(Node):
 
         qos = rclpy.qos.QoSProfile(depth=10)
         qos.reliability = rclpy.qos.QoSReliabilityPolicy.BEST_EFFORT
-        self.publisher = self.create_publisher(MyCobotMsg, '/mc_joints', qos)
 
         self.joint_pub = self.create_publisher(MyCobotMsg, '/mc_joints', qos)
         self.coord_pub = self.create_publisher(MyCobotMsg, '/mc_coords', qos)
