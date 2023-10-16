@@ -89,8 +89,8 @@ class ControllerListener(Node):
 
         elif action == 'move_to_default':
             # self.mc.send_angles([-0.17, -10, -133.24, 60.99, 0.17, 50.36], self.speed)
-            self.mc.send_angles(
-                [186.9, -51.0, 116.6, -177.44, 20, -136.52], self.speed)
+            self.mc.send_radians(
+                [0.052, -0.534, -1.934, 0.923, -0.031, -2.428], self.speed)
             time.sleep(3)
             self.angles = self.mc.get_radians()
             self.sim.send_angles(
