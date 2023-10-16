@@ -85,11 +85,11 @@ class ControllerListener(Node):
         print(self.coords)
 
         if action == 'stop':
-            self.mc.send_angles(self.angles, self.speed)
+            self.mc.send_radians(self.angles, self.speed)
 
         elif action == 'move_to_default':
             # self.mc.send_angles([-0.17, -10, -133.24, 60.99, 0.17, 50.36], self.speed)
-            self.mc.send_coords(
+            self.mc.send_angles(
                 [186.9, -51.0, 116.6, -177.44, 20, -136.52], self.speed)
             time.sleep(3)
             self.angles = self.mc.get_radians()
@@ -97,7 +97,7 @@ class ControllerListener(Node):
                 self.sim.convert_joint_angles_mc_to_sim(self.angles))
             self.coords = self.sim.forward_kinematics()
         elif action == 'move_to_home':
-            self.mc.sync_send_angles(
+            self.mc.send_angles(
                 [1.49, 123.48, -148.09, -32.78, 1.84, 55.45], 70)
             time.sleep(3)
             self.angles = self.mc.get_radians()
@@ -125,7 +125,7 @@ class ControllerListener(Node):
             self.coords[1] += 0.02
             pred_angles = self.sim.inverse_kinematics(self.coords)
             pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
-            self.mc.send_coords(pred_angles, self.speed)
+            self.mc.send_radians(pred_angles, self.speed)
             self.angles = self.mc.get_radians()
             self.sim.send_angles(
                 self.sim.convert_joint_angles_mc_to_sim(self.angles))
@@ -134,7 +134,7 @@ class ControllerListener(Node):
             self.coords[0] += 0.02
             pred_angles = self.sim.inverse_kinematics(self.coords)
             pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
-            self.mc.send_coords(pred_angles, self.speed)
+            self.mc.send_radians(pred_angles, self.speed)
             self.angles = self.mc.get_radians()
             self.sim.send_angles(
                 self.sim.convert_joint_angles_mc_to_sim(self.angles))
@@ -143,7 +143,7 @@ class ControllerListener(Node):
             self.coords[0] -= 0.02
             pred_angles = self.sim.inverse_kinematics(self.coords)
             pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
-            self.mc.send_coords(pred_angles, self.speed)
+            self.mc.send_radians(pred_angles, self.speed)
             self.angles = self.mc.get_radians()
             self.sim.send_angles(
                 self.sim.convert_joint_angles_mc_to_sim(self.angles))
@@ -152,7 +152,7 @@ class ControllerListener(Node):
             self.coords[2] += 0.02
             pred_angles = self.sim.inverse_kinematics(self.coords)
             pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
-            self.mc.send_coords(pred_angles, self.speed)
+            self.mc.send_radians(pred_angles, self.speed)
             self.angles = self.mc.get_radians()
             self.sim.send_angles(
                 self.sim.convert_joint_angles_mc_to_sim(self.angles))
@@ -161,18 +161,18 @@ class ControllerListener(Node):
             self.coords[2] -= 0.02
             pred_angles = self.sim.inverse_kinematics(self.coords)
             pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
-            self.mc.send_coords(pred_angles, self.speed)
+            self.mc.send_radians(pred_angles, self.speed)
             self.angles = self.mc.get_radians()
             self.sim.send_angles(
                 self.sim.convert_joint_angles_mc_to_sim(self.angles))
             self.coords = self.sim.forward_kinematics()
         # elif action == 'rx+':
         #     self.coords[3] += 2
-        #     self.mc.send_coords(self.angles, self.speed)
+        #     self.mc.send_radians(self.angles, self.speed)
         #     self.angles = self.mc.get_radians()
         # elif action == 'rx-':
         #     self.coords[3] -= 2
-        #     self.mc.send_coords(self.angles, self.speed)
+        #     self.mc.send_radians(self.angles, self.speed)
         #     self.angles = self.mc.get_radians()
 
 
