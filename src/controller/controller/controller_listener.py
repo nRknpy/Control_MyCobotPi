@@ -3,7 +3,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import Joy
 from mycobot_msg.msg import MyCobotMsg
 from pymycobot import MyCobot, PI_PORT, PI_BAUD
-from NLinkArm import NLinkArm
+from .NLinkArm import NLinkArm
 import math
 import time
 import atexit
