@@ -15,6 +15,7 @@ torch = "*"
 torchvision = "*"
 torchaudio = "*"
 pillow = "*"
+matplotlib = "*"
 
 [dev-packages]
 
