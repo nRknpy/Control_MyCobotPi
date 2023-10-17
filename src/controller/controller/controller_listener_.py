@@ -76,6 +76,7 @@ class ControllerListener(Node):
     def on_subscribe(self, msg):
         start = time.perf_counter()
         action = self.joy2action(msg)
+        self.get_logger().info(f'{action}')
         # self.get_logger().info(f'{action}')
 
         pub_msg = MyCobotMsg()
@@ -204,7 +205,7 @@ class ControllerListener(Node):
         #     self.mc.send_radians(self.angles, self.speed)
         #     self.angles = self.mc.get_radians()
         end = time.perf_counter() - start
-        self.get_logger().info(f't = {end}s')
+        # self.get_logger().info(f't = {end}s')
 
 
 def end(node: ControllerListener):
