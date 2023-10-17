@@ -84,18 +84,21 @@ class ControllerSim(Node):
             self.sim.send_angles(self.sim.convert_joint_angles_mc_to_sim(
                 [0.052, -0.534, -1.934, 0.923, -0.031, -2.428]))
             self.angles = self.sim.get_angles()
+            mc_angles = self.sim.convert_joint_angles_sim_to_mc(self.angles)
             self.coords = self.sim.forward_kinematics()
         elif action == 'move_to_home':
             self.sim.send_angles(self.sim.convert_joint_angles_mc_to_sim(
                 [0.024, 2.172, -2.6, -0.604, -0.143, 0.928]))
             self.angles = self.sim.get_angles()
+            mc_angles = self.sim.convert_joint_angles_sim_to_mc(self.angles)
             self.coords = self.sim.forward_kinematics()
 
         elif action == 'grip_on':
             self.gripper_value = 100
+            mc_angles = self.sim.convert_joint_angles_sim_to_mc(self.angles)
         elif action == 'grip_off':
-            # self.mc.set_gripper_state(0, self.speed)
             self.gripper_value = 0
+            mc_angles = self.sim.convert_joint_angles_sim_to_mc(self.angles)
 
         elif action == 'x-':
             cache = self.coords.copy()
@@ -167,7 +170,7 @@ class ControllerSim(Node):
         #     self.angles = self.mc.get_radians()
 
         pub_msg = MyCobotMsg()
-        pub_msg.joints = self.angles
+        pub_msg.joints = mc_angles
         pub_msg.gripper = self.gripper_value
 
         self.publisher.publish(pub_msg)
