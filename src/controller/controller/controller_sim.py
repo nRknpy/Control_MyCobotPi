@@ -24,7 +24,7 @@ class ControllerSim(Node):
         # self.angles = self.mc.get_radians()
 
         self.angles = self.sim.convert_joint_angles_mc_to_sim(
-            [0.052, -0.534, -1.934, 0.923, -0.031, -2.428])
+            [0.024, 2.172, -2.6, -0.604, -0.143, 0.928])
         self.sim.send_angles(self.angles)
         self.coords = self.sim.forward_kinematics()
         self.gripper_value = 0
@@ -71,7 +71,7 @@ class ControllerSim(Node):
 
     def on_subscribe(self, msg):
         action = self.joy2action(msg)
-        # self.get_logger().info(f'{action}')
+        self.get_logger().info(f'{action}')
 
         # print(self.mc.get_radians())
         # print(self.coords)
@@ -168,6 +168,9 @@ class ControllerSim(Node):
         #     self.coords[3] -= 2
         #     self.mc.send_radians(self.angles, self.speed)
         #     self.angles = self.mc.get_radians()
+        else:
+            mc_angles = mc_angles = self.sim.convert_joint_angles_sim_to_mc(
+                self.angles)
 
         pub_msg = MyCobotMsg()
         pub_msg.joints = mc_angles

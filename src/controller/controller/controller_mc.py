@@ -35,6 +35,7 @@ class ControllerMc(Node):
         radians = msg.joints
         gripper = msg.gripper
         print(f'radians; {radians}, gripper: {gripper}')
+        self.get_logger().info(f'radians; {radians}, gripper: {gripper}')
 
         self.mc.send_radians(radians, self.speed)
         self.mc.set_gripper_value(gripper, 20)
