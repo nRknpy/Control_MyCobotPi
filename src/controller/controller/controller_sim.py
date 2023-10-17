@@ -189,7 +189,7 @@ class ControllerSim(Node):
 
         self.publisher.publish(pub_msg)
 
-        self.sim.plot(realtime=True)
+        # self.sim.plot(realtime=True)
 
     @staticmethod
     def validate_coords(coords):

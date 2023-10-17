@@ -35,12 +35,12 @@ class ControllerMc(Node):
         self.angles = self.mc.get_angles()
         self.gripper_value = self.mc.get_gripper_value()
 
-        pub_msg = MyCobotMsg()
-        # pub_msg.header.stamp = self.get_clock().now().to_msg()
-        # pub_msg.joints = self.mc.get_radians()
-        pub_msg.joints = self.angles
-        pub_msg.gripper = self.mc.get_gripper_value()
-        self.publisher.publish(pub_msg)
+        # pub_msg = MyCobotMsg()
+        # # pub_msg.header.stamp = self.get_clock().now().to_msg()
+        # # pub_msg.joints = self.mc.get_radians()
+        # pub_msg.joints = self.angles
+        # pub_msg.gripper = self.mc.get_gripper_value()
+        # self.publisher.publish(pub_msg)
 
         print(f'radians; {radians}, gripper: {gripper}')
         self.get_logger().info(f'radians; {radians}, gripper: {gripper}')
