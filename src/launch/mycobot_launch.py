@@ -10,6 +10,6 @@ def generate_launch_description():
         ),
         Node(
             package='controller',
-            executable='controller_listener',
+            executable='controller_listener_',
         )
     ])
