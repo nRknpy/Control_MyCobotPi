@@ -130,7 +130,7 @@ class NLinkArm:
         return np.array(basic_jacobian_mat).T
 
     def inverse_kinematics(self, ref_ee_pose):
-        for cnt in range(5):
+        for cnt in range(10):
             ee_pose = self.forward_kinematics()
             diff_pose = np.array(ref_ee_pose) - ee_pose
 

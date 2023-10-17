@@ -113,42 +113,42 @@ class ControllerListener(Node):
             self.mc.set_gripper_value(0, self.speed)
 
         elif action == 'x-':
-            self.coords[1] -= 0.02
+            self.coords[1] -= 0.05
             pred_angles = self.sim.inverse_kinematics(self.coords)
             pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
             self.angles = self.sim.get_angles()
             self.sim.send_angles(self.angles)
             self.coords = self.sim.forward_kinematics()
         elif action == 'x+':
-            self.coords[1] += 0.02
+            self.coords[1] += 0.05
             pred_angles = self.sim.inverse_kinematics(self.coords)
             pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
             self.angles = self.sim.get_angles()
             self.sim.send_angles(self.angles)
             self.coords = self.sim.forward_kinematics()
         elif action == 'y+':
-            self.coords[0] += 0.02
+            self.coords[0] += 0.05
             pred_angles = self.sim.inverse_kinematics(self.coords)
             pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
             self.angles = self.sim.get_angles()
             self.sim.send_angles(self.angles)
             self.coords = self.sim.forward_kinematics()
         elif action == 'y-':
-            self.coords[0] -= 0.02
+            self.coords[0] -= 0.05
             pred_angles = self.sim.inverse_kinematics(self.coords)
             pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
             self.angles = self.sim.get_angles()
             self.sim.send_angles(self.angles)
             self.coords = self.sim.forward_kinematics()
         elif action == 'z+':
-            self.coords[2] += 0.02
+            self.coords[2] += 0.05
             pred_angles = self.sim.inverse_kinematics(self.coords)
             pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
             self.angles = self.sim.get_angles()
             self.sim.send_angles(self.angles)
             self.coords = self.sim.forward_kinematics()
         elif action == 'z-':
-            self.coords[2] -= 0.02
+            self.coords[2] -= 0.05
             pred_angles = self.sim.inverse_kinematics(self.coords)
             pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
             self.angles = self.sim.get_angles()
