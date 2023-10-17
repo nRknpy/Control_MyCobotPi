@@ -17,11 +17,12 @@ class ControllerMc(Node):
         self.speed = 90
         self.gripper_value = 0
 
-        self.listener = self.create_subscription(
-            MyCobotMsg, '/radians', self.on_subscribe, 10)
-
         qos = rclpy.qos.QoSProfile(depth=10)
         qos.reliability = rclpy.qos.QoSReliabilityPolicy.BEST_EFFORT
+
+        self.listener = self.create_subscription(
+            MyCobotMsg, '/radians', self.on_subscribe, 10, qos_profile=qos)
+
         self.publisher = self.create_publisher(MyCobotMsg, '/mc_joints', qos)
 
     def on_subscribe(self, msg):

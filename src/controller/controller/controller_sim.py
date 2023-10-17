@@ -77,7 +77,8 @@ class ControllerSim(Node):
         # print(self.coords)
 
         if action == 'stop':
-            self.sim.send_angles(self.angles)
+            # self.sim.send_angles(self.angles)
+            mc_angles = self.sim.convert_joint_angles_sim_to_mc(self.angles)
 
         elif action == 'move_to_default':
             # self.mc.send_angles([-0.17, -10, -133.24, 60.99, 0.17, 50.36], self.speed)
@@ -110,6 +111,8 @@ class ControllerSim(Node):
                 self.coords = self.sim.forward_kinematics()
             else:
                 self.coords = cache
+                mc_angles = self.sim.convert_joint_angles_sim_to_mc(
+                    self.angles)
         elif action == 'x+':
             cache = self.coords.copy()
             self.coords[1] += self.delta
@@ -120,6 +123,8 @@ class ControllerSim(Node):
                 self.coords = self.sim.forward_kinematics()
             else:
                 self.coords = cache
+                mc_angles = self.sim.convert_joint_angles_sim_to_mc(
+                    self.angles)
         elif action == 'y+':
             cache = self.coords.copy()
             self.coords[0] += self.delta
@@ -130,6 +135,8 @@ class ControllerSim(Node):
                 self.coords = self.sim.forward_kinematics()
             else:
                 self.coords = cache
+                mc_angles = self.sim.convert_joint_angles_sim_to_mc(
+                    self.angles)
         elif action == 'y-':
             cache = self.coords.copy()
             self.coords[0] -= self.delta
@@ -140,6 +147,8 @@ class ControllerSim(Node):
                 self.coords = self.sim.forward_kinematics()
             else:
                 self.coords = cache
+                mc_angles = self.sim.convert_joint_angles_sim_to_mc(
+                    self.angles)
         elif action == 'z+':
             cache = self.coords.copy()
             self.coords[2] += self.delta
@@ -150,6 +159,8 @@ class ControllerSim(Node):
                 self.coords = self.sim.forward_kinematics()
             else:
                 self.coords = cache
+                mc_angles = self.sim.convert_joint_angles_sim_to_mc(
+                    self.angles)
         elif action == 'z-':
             cache = self.coords.copy()
             self.coords[2] -= self.delta
@@ -160,6 +171,8 @@ class ControllerSim(Node):
                 self.coords = self.sim.forward_kinematics()
             else:
                 self.coords = cache
+                mc_angles = self.sim.convert_joint_angles_sim_to_mc(
+                    self.angles)
         # elif action == 'rx+':
         #     self.coords[3] += 2
         #     self.mc.send_radians(self.angles, self.speed)
