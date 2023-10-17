@@ -128,10 +128,10 @@ class ControllerListener(Node):
             pred_angles = self.sim.inverse_kinematics(self.coords)
             pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
             self.mc.send_radians(pred_angles, self.speed)
-            # while True:
-            #     self.angles = self.mc.get_radians()
-            #     if self.angles:
-            #         break
+            while True:
+                self.angles = self.mc.get_radians()
+                if self.angles:
+                    break
             # self.sim.send_angles(
             #     self.sim.convert_joint_angles_mc_to_sim(self.angles))
             # self.coords = self.sim.forward_kinematics()
