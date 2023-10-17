@@ -26,6 +26,15 @@ class ControllerMc(Node):
         self.publisher = self.create_publisher(MyCobotMsg, '/mc_joints', qos)
 
     def on_subscribe(self, msg):
+        radians = msg.joints
+        gripper = msg.gripper
+        self.mc.send_radians(radians, self.speed)
+        self.mc.set_gripper_value(gripper, 20)
+        # time.sleep(0.1)
+
+        self.angles = self.mc.get_radians()
+        self.gripper_value = self.mc.get_gripper_value()
+
         pub_msg = MyCobotMsg()
         # pub_msg.header.stamp = self.get_clock().now().to_msg()
         # pub_msg.joints = self.mc.get_radians()
@@ -33,17 +42,8 @@ class ControllerMc(Node):
         pub_msg.gripper = self.mc.get_gripper_value()
         self.publisher.publish(pub_msg)
 
-        radians = msg.joints
-        gripper = msg.gripper
         print(f'radians; {radians}, gripper: {gripper}')
         self.get_logger().info(f'radians; {radians}, gripper: {gripper}')
-
-        self.mc.send_radians(radians, self.speed)
-        self.mc.set_gripper_value(gripper, 20)
-        # time.sleep(0.1)
-
-        self.angles = self.mc.get_radians()
-        self.gripper_value = self.mc.get_gripper_value()
 
 
 def end(node: ControllerMc):
