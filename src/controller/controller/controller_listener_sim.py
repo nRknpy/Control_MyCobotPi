@@ -3,7 +3,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import Joy
 from mycobot_msg.msg import MyCobotMsg
 from pymycobot import MyCobot, PI_PORT, PI_BAUD
-from .NLinkArm import NLinkArm
+from NLinkArm import NLinkArm
 import math
 import time
 import atexit
@@ -22,11 +22,12 @@ class ControllerListener(Node):
             [0., 0., 0., 0.0436]
         ])
 
-        self.mc = MyCobot(PI_PORT, PI_BAUD)
-        self.angles = self.mc.get_radians()
+        # self.mc = MyCobot(PI_PORT, PI_BAUD)
+        # self.angles = self.mc.get_radians()
 
-        self.sim.send_angles(
-            self.sim.convert_joint_angles_mc_to_sim(self.angles))
+        self.angles = self.sim.convert_joint_angles_mc_to_sim(
+            [0.052, -0.534, -1.934, 0.923, -0.031, -2.428])
+        self.sim.send_angles(self.angles)
         self.coords = self.sim.forward_kinematics()
 
         self.speed = 90
@@ -71,44 +72,36 @@ class ControllerListener(Node):
         return 'stop'
 
     def on_subscribe(self, msg):
-        start = time.perf_counter()
         action = self.joy2action(msg)
         # self.get_logger().info(f'{action}')
 
         pub_msg = MyCobotMsg()
         # pub_msg.header.stamp = self.get_clock().now().to_msg()
-        pub_msg.joints = self.mc.get_radians()
-        pub_msg.gripper = self.mc.get_gripper_value()
+        pub_msg.joints = self.sim.get_angles()
+        pub_msg.gripper = -1
 
         self.publisher.publish(pub_msg)
 
-        print(self.mc.get_radians())
-        print(self.coords)
+        # print(self.mc.get_radians())
+        # print(self.coords)
 
         if action == 'stop':
-            self.mc.send_radians(self.angles, self.speed)
+            self.sim.send_angles(self.angles)
 
         elif action == 'move_to_default':
             # self.mc.send_angles([-0.17, -10, -133.24, 60.99, 0.17, 50.36], self.speed)
-            self.mc.send_radians(
-                [0.052, -0.534, -1.934, 0.923, -0.031, -2.428], self.speed)
+            self.sim.send_angles(self.sim.convert_joint_angles_mc_to_sim(
+                [0.052, -0.534, -1.934, 0.923, -0.031, -2.428]))
             time.sleep(3)
-            while True:
-                self.angles = self.mc.get_radians()
-                if self.angles:
-                    break
-            self.sim.send_angles(
-                self.sim.convert_joint_angles_mc_to_sim(self.angles))
+            self.angles = self.sim.get_angles()
+            self.sim.send_angles(self.angles)
             self.coords = self.sim.forward_kinematics()
         elif action == 'move_to_home':
             self.mc.send_angles(
                 [1.49, 123.48, -148.09, -32.78, 1.84, 55.45], 70)
             time.sleep(3)
-            while True:
-                self.angles = self.mc.get_radians()
-                if self.angles:
-                    break
-            self.sim.send_angles(
+            self.angles = self.mc.get_radians()
+            self.coords = self.sim.send_angles(
                 self.sim.convert_joint_angles_mc_to_sim(self.angles))
             self.coords = self.sim.forward_kinematics()
 
@@ -123,74 +116,44 @@ class ControllerListener(Node):
             self.coords[1] -= 0.02
             pred_angles = self.sim.inverse_kinematics(self.coords)
             pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
-            self.mc.send_radians(pred_angles, self.speed)
-            # while True:
-            #     self.angles = self.mc.get_radians()
-            #     if self.angles:
-            #         break
-            # self.sim.send_angles(
-            #     self.sim.convert_joint_angles_mc_to_sim(self.angles))
-            # self.coords = self.sim.forward_kinematics()
+            self.angles = self.sim.get_angles()
+            self.sim.send_angles(self.angles)
+            self.coords = self.sim.forward_kinematics()
         elif action == 'x+':
             self.coords[1] += 0.02
             pred_angles = self.sim.inverse_kinematics(self.coords)
             pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
-            self.mc.send_radians(pred_angles, self.speed)
-            # while True:
-            #     self.angles = self.mc.get_radians()
-            #     if self.angles:
-            #         break
-            # self.sim.send_angles(
-            #     self.sim.convert_joint_angles_mc_to_sim(self.angles))
-            # self.coords = self.sim.forward_kinematics()
+            self.angles = self.sim.get_angles()
+            self.sim.send_angles(self.angles)
+            self.coords = self.sim.forward_kinematics()
         elif action == 'y+':
             self.coords[0] += 0.02
             pred_angles = self.sim.inverse_kinematics(self.coords)
             pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
-            self.mc.send_radians(pred_angles, self.speed)
-            # while True:
-            #     self.angles = self.mc.get_radians()
-            #     if self.angles:
-            #         break
-            # self.sim.send_angles(
-            #     self.sim.convert_joint_angles_mc_to_sim(self.angles))
-            # self.coords = self.sim.forward_kinematics()
+            self.angles = self.sim.get_angles()
+            self.sim.send_angles(self.angles)
+            self.coords = self.sim.forward_kinematics()
         elif action == 'y-':
             self.coords[0] -= 0.02
             pred_angles = self.sim.inverse_kinematics(self.coords)
             pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
-            self.mc.send_radians(pred_angles, self.speed)
-            # while True:
-            #     self.angles = self.mc.get_radians()
-            #     if self.angles:
-            #         break
-            # self.sim.send_angles(
-            #     self.sim.convert_joint_angles_mc_to_sim(self.angles))
-            # self.coords = self.sim.forward_kinematics()
+            self.angles = self.sim.get_angles()
+            self.sim.send_angles(self.angles)
+            self.coords = self.sim.forward_kinematics()
         elif action == 'z+':
             self.coords[2] += 0.02
             pred_angles = self.sim.inverse_kinematics(self.coords)
             pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
-            self.mc.send_radians(pred_angles, self.speed)
-            # while True:
-            #     self.angles = self.mc.get_radians()
-            #     if self.angles:
-            #         break
-            # self.sim.send_angles(
-            #     self.sim.convert_joint_angles_mc_to_sim(self.angles))
-            # self.coords = self.sim.forward_kinematics()
+            self.angles = self.sim.get_angles()
+            self.sim.send_angles(self.angles)
+            self.coords = self.sim.forward_kinematics()
         elif action == 'z-':
             self.coords[2] -= 0.02
             pred_angles = self.sim.inverse_kinematics(self.coords)
             pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
-            self.mc.send_radians(pred_angles, self.speed)
-            # while True:
-            #     self.angles = self.mc.get_radians()
-            #     if self.angles:
-            #         break
-            # self.sim.send_angles(
-            #     self.sim.convert_joint_angles_mc_to_sim(self.angles))
-            # self.coords = self.sim.forward_kinematics()
+            self.angles = self.sim.get_angles()
+            self.sim.send_angles(self.angles)
+            self.coords = self.sim.forward_kinematics()
         # elif action == 'rx+':
         #     self.coords[3] += 2
         #     self.mc.send_radians(self.angles, self.speed)
@@ -199,8 +162,7 @@ class ControllerListener(Node):
         #     self.coords[3] -= 2
         #     self.mc.send_radians(self.angles, self.speed)
         #     self.angles = self.mc.get_radians()
-        end = time.perf_counter() - start
-        self.get_logger().info(f't = {end}s')
+        self.sim.plot(realtime=True)
 
 
 def end(node: ControllerListener):
@@ -211,8 +173,8 @@ def end(node: ControllerListener):
 def main():
     rclpy.init()
     node = ControllerListener()
-    node.mc.set_gripper_calibration()
-    atexit.register(end, node)
+    # node.mc.set_gripper_calibration()
+    # atexit.register(end, node)
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
