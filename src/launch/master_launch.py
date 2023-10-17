@@ -11,5 +11,9 @@ def generate_launch_description():
         Node(
             package='sensor',
             executable='sensor_listener',
+        ),
+        Node(
+            package='controller',
+            executable='controller_sim',
         )
     ])
