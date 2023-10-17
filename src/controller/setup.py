@@ -22,6 +22,7 @@ setup(
         'console_scripts': [
             'controller_talker = controller.controller_talker:main',
             'controller_listener = controller.controller_listener:main',
+            'controller_listener_ = controller.controller_listener_:main',
         ],
     },
 )
