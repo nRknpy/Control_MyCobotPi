@@ -21,7 +21,7 @@ class ControllerMc(Node):
         qos.reliability = rclpy.qos.QoSReliabilityPolicy.BEST_EFFORT
 
         self.listener = self.create_subscription(
-            MyCobotMsg, '/radians', self.on_subscribe, 10, qos_profile=qos)
+            MyCobotMsg, '/radians', self.on_subscribe, qos_profile=qos)
 
         self.publisher = self.create_publisher(MyCobotMsg, '/mc_joints', qos)
 
