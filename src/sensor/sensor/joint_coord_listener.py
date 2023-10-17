@@ -18,22 +18,25 @@ class JointCoordListener(Node):
         qos = rclpy.qos.QoSProfile(depth=10)
         qos.reliability = rclpy.qos.QoSReliabilityPolicy.BEST_EFFORT
 
-        self.coords_sub = Subscriber(
-            self, MyCobotMsg, '/mc_coords', qos_profile=qos)
-        self.joint_sub = Subscriber(
-            self, MyCobotMsg, '/mc_joints', qos_profile=qos)
-        self.radian_sub = Subscriber(
-            self, MyCobotMsg, '/mc_radian', qos_profile=qos)
+        # self.coords_sub = Subscriber(
+        #     self, MyCobotMsg, '/mc_coords', qos_profile=qos)
+        # self.joint_sub = Subscriber(
+        #     self, MyCobotMsg, '/mc_joints', qos_profile=qos)
+        # self.radian_sub = Subscriber(
+        #     self, MyCobotMsg, '/mc_radian', qos_profile=qos)
+
+        self.radian_sub = self.create_subscription(
+            MyCobotMsg, "/mc_radian", self.callback, qos)
 
         queue_size = 30
 
-        self.ts = ApproximateTimeSynchronizer(
-            [self.coords_sub, self.joint_sub, self.radian_sub],
-            queue_size,
-            0.01,
-            allow_headerless=True
-        )
-        self.ts.registerCallback(self.callback)
+        # self.ts = ApproximateTimeSynchronizer(
+        #     [self.coords_sub, self.joint_sub, self.radian_sub],
+        #     queue_size,
+        #     0.01,
+        #     allow_headerless=True
+        # )
+        # self.ts.registerCallback(self.callback)
 
         self.sim = NLinkArm([
             [0., math.pi / 2, 0, 0.13156],
@@ -44,9 +47,13 @@ class JointCoordListener(Node):
             [0., 0., 0., 0.0436]
         ])
 
-    def callback(self, coords_msg, joint_msg, radian_msg):
+    def callback(self,
+                 #  coords_msg,
+                 #  joint_msg,
+                 radian_msg):
         self.get_logger().info(
-            f'joint: {np.array(joint_msg.joints)}\ncoords: {np.array(coords_msg.joints)}\nradian: {np.array(radian_msg.joints)}')
+            # f'joint: {np.array(joint_msg.joints)}\ncoords: {np.array(coords_msg.joints)}\nradian: {np.array(radian_msg.joints)}')
+            f'radian: {np.array(radian_msg.joints)}')
         self.sim.send_angles(
             self.sim.convert_joint_angles_mc_to_sim(radian_msg.joints))
         coords = self.sim.forward_kinematics()

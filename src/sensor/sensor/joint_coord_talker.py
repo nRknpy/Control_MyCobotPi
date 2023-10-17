@@ -14,31 +14,31 @@ class JointCoordTalker(Node):
         qos = rclpy.qos.QoSProfile(depth=10)
         qos.reliability = rclpy.qos.QoSReliabilityPolicy.BEST_EFFORT
 
-        self.joint_pub = self.create_publisher(MyCobotMsg, '/mc_joints', qos)
-        self.coord_pub = self.create_publisher(MyCobotMsg, '/mc_coords', qos)
+        # self.joint_pub = self.create_publisher(MyCobotMsg, '/mc_joints', qos)
+        # self.coord_pub = self.create_publisher(MyCobotMsg, '/mc_coords', qos)
         self.radian_pub = self.create_publisher(MyCobotMsg, '/mc_radian', qos)
 
-        self.timer = self.create_timer(0.5, self.callback)
+        self.timer = self.create_timer(0.1, self.callback)
 
     def callback(self):
-        joints = self.mc.get_angles()
-        coords = self.mc.get_coords()
+        # joints = self.mc.get_angles()
+        # coords = self.mc.get_coords()
         radian = self.mc.get_radians()
         gripper = self.mc.get_gripper_value()
 
-        joints_msg = MyCobotMsg()
-        coords_msg = MyCobotMsg()
+        # joints_msg = MyCobotMsg()
+        # coords_msg = MyCobotMsg()
         radian_msg = MyCobotMsg()
 
-        joints_msg.joints = joints
-        joints_msg.gripper = gripper
-        coords_msg.joints = coords
-        coords_msg.gripper = gripper
+        # joints_msg.joints = joints
+        # joints_msg.gripper = gripper
+        # coords_msg.joints = coords
+        # coords_msg.gripper = gripper
         radian_msg.joints = radian
         radian_msg.gripper = gripper
 
-        self.joint_pub.publish(joints_msg)
-        self.coord_pub.publish(coords_msg)
+        # self.joint_pub.publish(joints_msg)
+        # self.coord_pub.publish(coords_msg)
         self.radian_pub.publish(radian_msg)
 
 
