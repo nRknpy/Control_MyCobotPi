@@ -40,7 +40,7 @@ class ControllerMc(Node):
 
         self.mc.send_radians(radians, self.speed)
         self.mc.set_gripper_value(gripper, 20)
-        time.sleep(0.1)
+        # time.sleep(0.1)
 
         self.angles = self.mc.get_radians()
         self.gripper_value = self.mc.get_gripper_value()
