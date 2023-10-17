@@ -34,9 +34,7 @@ class ControllerSim(Node):
         self.listener = self.create_subscription(
             Joy, 'joy', self.on_subscribe, 10)
 
-        qos = rclpy.qos.QoSProfile(depth=10)
-        qos.reliability = rclpy.qos.QoSReliabilityPolicy.BEST_EFFORT
-        self.publisher = self.create_publisher(MyCobotMsg, '/radians', qos)
+        self.publisher = self.create_publisher(MyCobotMsg, '/radians')
 
     def joy2action(self, joy):
         if joy.buttons[5]:
