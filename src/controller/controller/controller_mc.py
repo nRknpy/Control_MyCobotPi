@@ -12,7 +12,7 @@ class ControllerMc(Node):
         super().__init__('controller_mc')
 
         self.mc = MyCobot(PI_PORT, PI_BAUD)
-        self.angles = self.mc.get_radians()
+        self.angles = self.mc.get_angles()
 
         self.speed = 100
         self.gripper_value = 0
@@ -32,7 +32,7 @@ class ControllerMc(Node):
         self.mc.set_gripper_value(gripper, 20)
         # time.sleep(0.1)
 
-        self.angles = self.mc.get_radians()
+        self.angles = self.mc.get_angles()
         self.gripper_value = self.mc.get_gripper_value()
 
         pub_msg = MyCobotMsg()
