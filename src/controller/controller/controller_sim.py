@@ -34,7 +34,7 @@ class ControllerSim(Node):
         self.listener = self.create_subscription(
             Joy, 'joy', self.on_subscribe, 10)
 
-        self.publisher = self.create_publisher(MyCobotMsg, '/radians')
+        self.publisher = self.create_publisher(MyCobotMsg, '/radians', 10)
 
     def joy2action(self, joy):
         if joy.buttons[5]:
