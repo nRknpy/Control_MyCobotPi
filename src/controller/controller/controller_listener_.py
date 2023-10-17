@@ -28,9 +28,10 @@ class ControllerListener(Node):
             if self.angles:
                 break
 
-        self.sim.send_angles(
-            self.sim.convert_joint_angles_mc_to_sim(self.angles))
-        self.coords = self.sim.forward_kinematics()
+        self.coords = self.mc.get_coords()
+        # self.sim.send_angles(
+        #     self.sim.convert_joint_angles_mc_to_sim(self.angles))
+        # self.coords = self.sim.forward_kinematics()
 
         self.speed = 90
         self.gripper_value = 0
@@ -136,6 +137,7 @@ class ControllerListener(Node):
             # self.sim.send_angles(
             #     self.sim.convert_joint_angles_mc_to_sim(self.angles))
             # self.coords = self.sim.forward_kinematics()
+            self.coords = self.mc.get_coords()
         elif action == 'x+':
             self.coords[1] += 0.02
             pred_angles = self.sim.inverse_kinematics(self.coords)
@@ -148,6 +150,7 @@ class ControllerListener(Node):
             # self.sim.send_angles(
             #     self.sim.convert_joint_angles_mc_to_sim(self.angles))
             # self.coords = self.sim.forward_kinematics()
+            self.coords = self.mc.get_coords()
         elif action == 'y+':
             self.coords[0] += 0.02
             pred_angles = self.sim.inverse_kinematics(self.coords)
@@ -160,6 +163,7 @@ class ControllerListener(Node):
             # self.sim.send_angles(
             #     self.sim.convert_joint_angles_mc_to_sim(self.angles))
             # self.coords = self.sim.forward_kinematics()
+            self.coords = self.mc.get_coords()
         elif action == 'y-':
             self.coords[0] -= 0.02
             pred_angles = self.sim.inverse_kinematics(self.coords)
@@ -172,6 +176,7 @@ class ControllerListener(Node):
             # self.sim.send_angles(
             #     self.sim.convert_joint_angles_mc_to_sim(self.angles))
             # self.coords = self.sim.forward_kinematics()
+            self.coords = self.mc.get_coords()
         elif action == 'z+':
             self.coords[2] += 0.02
             pred_angles = self.sim.inverse_kinematics(self.coords)
@@ -184,6 +189,7 @@ class ControllerListener(Node):
             # self.sim.send_angles(
             #     self.sim.convert_joint_angles_mc_to_sim(self.angles))
             # self.coords = self.sim.forward_kinematics()
+            self.coords = self.mc.get_coords()
         elif action == 'z-':
             self.coords[2] -= 0.02
             pred_angles = self.sim.inverse_kinematics(self.coords)
@@ -196,6 +202,7 @@ class ControllerListener(Node):
             # self.sim.send_angles(
             #     self.sim.convert_joint_angles_mc_to_sim(self.angles))
             # self.coords = self.sim.forward_kinematics()
+            self.coords = self.mc.get_coords()
         # elif action == 'rx+':
         #     self.coords[3] += 2
         #     self.mc.send_radians(self.angles, self.speed)
