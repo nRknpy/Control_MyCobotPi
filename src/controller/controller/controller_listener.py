@@ -3,8 +3,6 @@ from rclpy.node import Node
 from sensor_msgs.msg import Joy
 from mycobot_msg.msg import MyCobotMsg
 from pymycobot import MyCobot, PI_PORT, PI_BAUD
-from .NLinkArm import NLinkArm
-import math
 import time
 import atexit
 
@@ -13,24 +11,13 @@ class ControllerListener(Node):
     def __init__(self):
         super().__init__('controller_listener')
 
-        self.sim = NLinkArm([
-            [0., math.pi / 2, 0, 0.13156],
-            [0., 0., -0.1104, 0.],
-            [0., 0., -0.096, 0.],
-            [0., math.pi / 2, 0., 0.06639],
-            [0., -math.pi / 2, 0., 0.07318],
-            [0., 0., 0., 0.0436]
-        ])
-
         self.mc = MyCobot(PI_PORT, PI_BAUD)
-        self.angles = self.mc.get_radians()
-
-        self.sim.send_angles(
-            self.sim.convert_joint_angles_mc_to_sim(self.angles))
-        self.coords = self.sim.forward_kinematics()
+        self.angles = self.mc.get_angles()
+        self.coords = self.mc.get_coords()
 
         self.speed = 90
         self.gripper_value = 0
+        self.prev_action = 'stop'
 
         self.listener = self.create_subscription(
             Joy, 'joy', self.on_subscribe, 10)
@@ -76,34 +63,32 @@ class ControllerListener(Node):
 
         pub_msg = MyCobotMsg()
         # pub_msg.header.stamp = self.get_clock().now().to_msg()
-        pub_msg.joints = self.mc.get_radians()
+        pub_msg.joints = self.mc.get_angles()
         pub_msg.gripper = self.mc.get_gripper_value()
 
         self.publisher.publish(pub_msg)
 
-        print(self.mc.get_radians())
-        print(self.coords)
+        print(self.mc.get_angles())
 
         if action == 'stop':
-            self.mc.send_radians(self.angles, self.speed)
+            self.mc.send_angles(self.angles, self.speed)
+            self.prev_action = 'stop'
 
         elif action == 'move_to_default':
+            self.prev_action = action
             # self.mc.send_angles([-0.17, -10, -133.24, 60.99, 0.17, 50.36], self.speed)
-            self.mc.send_radians(
-                [0.052, -0.534, -1.934, 0.923, -0.031, -2.428], self.speed)
+            self.mc.send_coords(
+                [186.9, -51.0, 116.6, -177.44, 20, -136.52], self.speed)
             time.sleep(3)
-            self.angles = self.mc.get_radians()
-            self.sim.send_angles(
-                self.sim.convert_joint_angles_mc_to_sim(self.angles))
-            self.coords = self.sim.forward_kinematics()
+            self.angles = self.mc.get_angles()
+            self.coords = self.mc.get_coords()
         elif action == 'move_to_home':
-            self.mc.send_angles(
+            self.prev_action = action
+            self.mc.sync_send_angles(
                 [1.49, 123.48, -148.09, -32.78, 1.84, 55.45], 70)
             time.sleep(3)
-            self.angles = self.mc.get_radians()
-            self.coords = self.sim.send_angles(
-                self.sim.convert_joint_angles_mc_to_sim(self.angles))
-            self.coords = self.sim.forward_kinematics()
+            self.angles = self.mc.get_angles()
+            self.coords = self.mc.get_coords()
 
         elif action == 'grip_on':
             # self.mc.set_gripper_state(1, self.speed)
@@ -113,67 +98,55 @@ class ControllerListener(Node):
             self.mc.set_gripper_value(0, self.speed)
 
         elif action == 'x-':
-            self.coords[1] -= 0.02
-            pred_angles = self.sim.inverse_kinematics(self.coords)
-            pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
-            self.mc.send_radians(pred_angles, self.speed)
-            self.angles = self.mc.get_radians()
-            self.sim.send_angles(
-                self.sim.convert_joint_angles_mc_to_sim(self.angles))
-            self.coords = self.sim.forward_kinematics()
+            self.prev_action = action
+            # self.angles[0] += 2
+            # self.mc.send_angles(self.angles, self.speed)
+            self.coords[1] -= 4
+            self.mc.send_coords(self.coords, self.speed)
+            self.angles = self.mc.get_angles()
         elif action == 'x+':
-            self.coords[1] += 0.02
-            pred_angles = self.sim.inverse_kinematics(self.coords)
-            pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
-            self.mc.send_radians(pred_angles, self.speed)
-            self.angles = self.mc.get_radians()
-            self.sim.send_angles(
-                self.sim.convert_joint_angles_mc_to_sim(self.angles))
-            self.coords = self.sim.forward_kinematics()
+            self.prev_action = action
+            # self.angles[0] -= 2
+            # self.mc.send_angles(self.angles, self.speed)
+            self.coords[1] += 4
+            self.mc.send_coords(self.coords, self.speed)
+            self.angles = self.mc.get_angles()
         elif action == 'y+':
-            self.coords[0] += 0.02
-            pred_angles = self.sim.inverse_kinematics(self.coords)
-            pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
-            self.mc.send_radians(pred_angles, self.speed)
-            self.angles = self.mc.get_radians()
-            self.sim.send_angles(
-                self.sim.convert_joint_angles_mc_to_sim(self.angles))
-            self.coords = self.sim.forward_kinematics()
+            self.prev_action = action
+            # self.angles[0] += 2
+            # self.mc.send_angles(self.angles, self.speed)
+            self.coords[0] += 4
+            self.mc.send_coords(self.coords, self.speed)
+            self.angles = self.mc.get_angles()
         elif action == 'y-':
-            self.coords[0] -= 0.02
-            pred_angles = self.sim.inverse_kinematics(self.coords)
-            pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
-            self.mc.send_radians(pred_angles, self.speed)
-            self.angles = self.mc.get_radians()
-            self.sim.send_angles(
-                self.sim.convert_joint_angles_mc_to_sim(self.angles))
-            self.coords = self.sim.forward_kinematics()
+            self.prev_action = action
+            # self.angles[0] += 2
+            # self.mc.send_angles(self.angles, self.speed)
+            self.coords[0] -= 4
+            self.mc.send_coords(self.coords, self.speed)
+            self.angles = self.mc.get_angles()
         elif action == 'z+':
-            self.coords[2] += 0.02
-            pred_angles = self.sim.inverse_kinematics(self.coords)
-            pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
-            self.mc.send_radians(pred_angles, self.speed)
-            self.angles = self.mc.get_radians()
-            self.sim.send_angles(
-                self.sim.convert_joint_angles_mc_to_sim(self.angles))
-            self.coords = self.sim.forward_kinematics()
+            self.prev_action = action
+            # self.angles[0] += 2
+            # self.mc.send_angles(self.angles, self.speed)
+            self.coords[2] += 4
+            self.mc.send_coords(self.coords, self.speed)
+            self.angles = self.mc.get_angles()
         elif action == 'z-':
-            self.coords[2] -= 0.02
-            pred_angles = self.sim.inverse_kinematics(self.coords)
-            pred_angles = self.sim.convert_joint_angles_sim_to_mc(pred_angles)
-            self.mc.send_radians(pred_angles, self.speed)
-            self.angles = self.mc.get_radians()
-            self.sim.send_angles(
-                self.sim.convert_joint_angles_mc_to_sim(self.angles))
-            self.coords = self.sim.forward_kinematics()
+            self.prev_action = action
+            # self.angles[0] += 2
+            # self.mc.send_angles(self.angles, self.speed)
+            self.coords[2] -= 4
+            self.mc.send_coords(self.coords, self.speed)
+            self.angles = self.mc.get_angles()
         # elif action == 'rx+':
         #     self.coords[3] += 2
-        #     self.mc.send_radians(self.angles, self.speed)
-        #     self.angles = self.mc.get_radians()
+        #     self.mc.send_coords(self.angles, self.speed)
+        #     self.angles = self.mc.get_angles()
         # elif action == 'rx-':
         #     self.coords[3] -= 2
-        #     self.mc.send_radians(self.angles, self.speed)
-        #     self.angles = self.mc.get_radians()
+        #     self.mc.send_coords(self.angles, self.speed)
+        #     self.angles = self.mc.get_angles()
 
 
 def end(node: ControllerListener):
