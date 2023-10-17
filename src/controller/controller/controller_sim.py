@@ -29,7 +29,7 @@ class ControllerSim(Node):
         self.coords = self.sim.forward_kinematics()
         self.gripper_value = 0
 
-        self.delta = 0.08
+        self.delta = 0.05
 
         self.listener = self.create_subscription(
             Joy, 'joy', self.on_subscribe, 10)

@@ -14,7 +14,7 @@ class ControllerMc(Node):
         self.mc = MyCobot(PI_PORT, PI_BAUD)
         self.angles = self.mc.get_radians()
 
-        self.speed = 90
+        self.speed = 100
         self.gripper_value = 0
 
         qos = rclpy.qos.QoSProfile(depth=10)
