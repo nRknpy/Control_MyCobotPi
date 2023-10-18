@@ -43,7 +43,8 @@ class ControllerMc(Node):
         #         else:
         #             self.get_logger().info('failed!' * 10)
         self.angles = radians
-        self.gripper_value = self.mc.get_gripper_value()
+        # self.gripper_value = self.mc.get_gripper_value()
+        self.gripper_value = gripper
 
         pub_msg = MyCobotMsg()
         pub_msg.joints = self.angles

@@ -10,7 +10,7 @@ class PyBulletSim(Node):
         super().__init__('pybullet_sim')
 
         self.pub = self.create_publisher(MyCobotMsg, '/radians', 10)
-        self.timer = self.create_timer(0.05, self.run)
+        self.timer = self.create_timer(0.02, self.run)
 
         clid = p.connect(p.GUI)
         start_pos = [0, 0, 0]
