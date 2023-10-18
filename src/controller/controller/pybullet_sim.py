@@ -32,7 +32,7 @@ class PyBulletSim(Node):
         p.stepSimulation()
 
         for i in range(1):
-            pos = [0.1 * math.cos(self.t), 0.2, 0.15 + 0.1 * math.sin(self.t)]
+            pos = [0.1 * math.cos(self.t), 0.2, 0.2 + 0.1 * math.sin(self.t)]
             orn = p.getQuaternionFromEuler([-math.pi / 2., 0, 0])
 
             joint_angles = p.calculateInverseKinematics(self.mycobot_id,

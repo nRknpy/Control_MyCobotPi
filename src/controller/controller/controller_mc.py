@@ -32,7 +32,13 @@ class ControllerMc(Node):
         self.mc.set_gripper_value(gripper, 20)
         # time.sleep(0.1)
 
-        self.angles = self.mc.get_angles()
+        while True:
+            try:
+                self.angles = self.mc.get_angles()
+            except:
+                pass
+            else:
+                break
         self.gripper_value = self.mc.get_gripper_value()
 
         # pub_msg = MyCobotMsg()
