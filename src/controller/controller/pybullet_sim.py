@@ -33,7 +33,8 @@ class PyBulletSim(Node):
 
         for i in range(1):
             pos = [0.1 * math.cos(self.t), 0.2, 0.2 + 0.1 * math.sin(self.t)]
-            orn = p.getQuaternionFromEuler([-math.pi / 2., 0, 0])
+            orn = p.getQuaternionFromEuler(
+                [-math.pi / 2.3, math.pi / 8., -math.pi / 4.])
 
             joint_angles = p.calculateInverseKinematics(self.mycobot_id,
                                                         6,
@@ -63,7 +64,7 @@ class PyBulletSim(Node):
 
         msg = MyCobotMsg()
         msg.joints = radians
-        msg.gripper = 0
+        msg.gripper = 100
         self.pub.publish(msg)
         # print(ls)
 

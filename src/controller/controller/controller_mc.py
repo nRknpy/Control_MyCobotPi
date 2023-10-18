@@ -36,7 +36,7 @@ class ControllerMc(Node):
             try:
                 self.angles = self.mc.get_angles()
             except:
-                pass
+                self.get_logger().info('failed')
             else:
                 break
         self.gripper_value = self.mc.get_gripper_value()
