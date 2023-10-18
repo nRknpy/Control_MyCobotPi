@@ -38,7 +38,10 @@ class ControllerMc(Node):
             except:
                 self.get_logger().info('failed!' * 10)
             else:
-                break
+                if self.angles:
+                    break
+                else:
+                    pass
         self.gripper_value = self.mc.get_gripper_value()
 
         # pub_msg = MyCobotMsg()
