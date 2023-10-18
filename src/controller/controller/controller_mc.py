@@ -36,7 +36,7 @@ class ControllerMc(Node):
             try:
                 self.angles = self.mc.get_angles()
             except:
-                self.get_logger().info('failed')
+                self.get_logger().info('failed!' * 10)
             else:
                 break
         self.gripper_value = self.mc.get_gripper_value()
@@ -48,8 +48,9 @@ class ControllerMc(Node):
         # pub_msg.gripper = self.mc.get_gripper_value()
         # self.publisher.publish(pub_msg)
 
-        print(f'radians; {radians}, gripper: {gripper}')
-        self.get_logger().info(f'radians; {radians}, gripper: {gripper}')
+        print(f'radians; {self.angles}, gripper: {self.gripper_value}')
+        self.get_logger().info(
+            f'radians; {self.angles}, gripper: {self.gripper_value}')
 
 
 def main():
