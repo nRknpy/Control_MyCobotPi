@@ -46,16 +46,10 @@ class ControllerMc(Node):
         self.get_logger().info(f'radians; {radians}, gripper: {gripper}')
 
 
-def end(node: ControllerMc):
-    node.mc.release_all_servos()
-    node.mc.set_gripper_state(254, 10)
-
-
 def main():
     rclpy.init()
     node = ControllerMc()
     node.mc.set_gripper_calibration()
-    atexit.register(end, node)
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()

@@ -29,7 +29,7 @@ class ControllerSim(Node):
         self.coords = self.sim.forward_kinematics()
         self.gripper_value = 0
 
-        self.delta = 0.05
+        self.delta = 0.12
 
         self.listener = self.create_subscription(
             Joy, 'joy', self.on_subscribe, 10)
@@ -194,7 +194,7 @@ class ControllerSim(Node):
     @staticmethod
     def validate_coords(coords):
         print(coords[:3])
-        if not (coords[2] >= 0. and math.dist([0, 0, 0], coords[:3]) <= 0.37):
+        if not (coords[2] >= -0.1 and math.dist([0, 0, 0], coords[:3]) <= 0.37):
             return False
         return True
 

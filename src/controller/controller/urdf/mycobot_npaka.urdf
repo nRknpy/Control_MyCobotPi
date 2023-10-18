@@ -1,0 +1,251 @@
+<?xml version="1.0"?>
+<robot name="mycobot">
+  <!--world-->
+  <link name="world" />
+
+  <!--worldとbase_linkを繋ぐジョイント-->
+  <joint name="body_joint" type="fixed">
+    <parent link="world" />
+    <child link="base_link" />
+  </joint>
+
+  <!--base_link-->
+  <link name="base_link">
+    <!--可視化情報-->
+    <visual>
+      <origin xyz="0 0 0 " rpy=" 0 0 0" />
+      <geometry>
+        <mesh filename="package://mycobot_ros/urdf/joint1.dae" />
+      </geometry>
+    </visual>
+
+    <!--衝突属性-->
+    <collision>
+      <origin xyz="0 0 0.035" rpy="0 0 0" />
+      <geometry>
+        <cylinder length="0.07" radius="0.05" />
+      </geometry>
+    </collision>
+
+    <!--物理属性-->
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0.075" />
+      <mass value="5" />
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
+    </inertial>
+  </link>
+
+  <!--base_linkとarm1_linkを繋ぐジョイント-->
+  <joint name="arm1_joint" type="revolute">
+    <parent link="base_link" />
+    <child link="arm1_link" />
+    <origin xyz="0 0 0.0706" rpy="0 0 0" />
+    <axis xyz="0 0 1" />
+    <limit effort="30" lower="-2.88" upper="2.88" velocity="1.5" />
+  </joint>
+
+  <!--arm1-->
+  <link name="arm1_link">
+    <!--可視化情報-->
+    <visual>
+      <origin xyz="0 0 0 " rpy=" 0 0 0" />
+      <geometry>
+        <mesh filename="package://mycobot_ros/urdf/joint2.dae" />
+      </geometry>
+    </visual>
+
+    <!--衝突属性-->
+    <collision>
+      <origin xyz="0 0 0.04" rpy="0 0 0" />
+      <geometry>
+        <cylinder length="0.08" radius="0.024" />
+      </geometry>
+    </collision>
+
+    <!--物理属性-->
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0.075" />
+      <mass value="0.1" />
+      <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01" />
+    </inertial>
+  </link>
+
+  <!--arm1_linkとarm2_linkを繋ぐジョイント-->
+  <joint name="arm2_joint" type="revolute">
+    <parent link="arm1_link" />
+    <child link="arm2_link" />
+    <origin xyz="0.03256 0  0.05976" rpy="0 0 0" />
+    <axis xyz="1 0 0" />
+    <limit effort="30" lower="-2.88" upper="2.88" velocity="1.5" />
+  </joint>
+
+  <!--arm2_link-->
+  <link name="arm2_link">
+    <!--可視化情報-->
+    <visual>
+      <origin xyz="0 0 0 " rpy=" 0 0 0" />
+      <geometry>
+        <mesh filename="package://mycobot_ros/urdf/joint3.dae" />
+      </geometry>
+    </visual>
+
+    <!--衝突属性-->
+    <collision>
+      <origin xyz="0.03 0 0.065" rpy="0 0 0" />
+      <geometry>
+        <cylinder length="0.13" radius="0.024" />
+      </geometry>
+    </collision>
+
+    <!--物理属性-->
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0.06" />
+      <mass value="0.1" />
+      <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01" />
+    </inertial>
+  </link>
+
+  <!--arm2_linkとarm3_linkを繋ぐジョイント-->
+  <joint name="arm3_joint" type="revolute">
+    <parent link="arm2_link" />
+    <child link="arm3_link" />
+    <origin xyz="0.00272 0 0.1104" rpy="0 0 0" />
+    <axis xyz="1 0 0" />
+    <limit effort="30" lower="-2.88" upper="2.88" velocity="1.5" />
+  </joint>
+
+  <!--arm3_link-->
+  <link name="arm3_link">
+    <!--可視化情報-->
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://mycobot_ros/urdf/joint4.dae" />
+      </geometry>
+    </visual>
+
+    <!--衝突属性-->
+    <collision>
+      <origin xyz="-0.03 0 0.06" rpy="0 0 0" />
+      <geometry>
+        <cylinder length="0.12" radius="0.024" />
+      </geometry>
+    </collision>
+
+    <!--物理属性-->
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0.06" />
+      <mass value="0.1" />
+      <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01" />
+    </inertial>
+  </link>
+
+  <!--arm3_linkとarm4_linkを繋ぐジョイント-->
+  <joint name="arm4_joint" type="revolute">
+    <parent link="arm3_link" />
+    <child link="arm4_link" />
+    <origin xyz="-0.00164 0 0.096" rpy="0 0 0" />
+    <axis xyz="1 0 0" />
+    <limit effort="1000.0" lower="-2.88" upper="2.88" velocity="0" />
+  </joint>
+
+  <!--arm4_link-->
+  <link name="arm4_link">
+    <!--可視化情報-->
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://mycobot_ros/urdf/joint5.dae" />
+      </geometry>
+    </visual>
+
+    <!--衝突属性-->
+    <collision>
+      <origin xyz="0.03 0 0.03" rpy="0 0 0" />
+      <geometry>
+        <cylinder length="0.06" radius="0.024" />
+      </geometry>
+    </collision>
+
+    <!--物理属性-->
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0.06" />
+      <mass value="0.1" />
+      <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01" />
+    </inertial>
+  </link>
+
+  <!--arm4_linkとarm5_linkを繋ぐジョイント-->
+  <joint name="arm5_joint" type="revolute">
+    <parent link="arm4_link" />
+    <child link="arm5_link" />
+    <origin xyz="0.0288 0 0.02976" rpy="0 0 0" />
+    <axis xyz="0 0 1" />
+    <limit effort="30" lower="-2.88" upper="2.88" velocity="1.5" />
+  </joint>
+
+  <!--arm5_link-->
+  <link name="arm5_link">
+    <!--可視化情報-->
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://mycobot_ros/urdf/joint6.dae" />
+      </geometry>
+    </visual>
+
+    <!--衝突属性-->
+    <collision>
+      <origin xyz="0 0 0.035" rpy="1.57075 0 0" />
+      <geometry>
+        <cylinder length="0.06" radius="0.024" />
+      </geometry>
+    </collision>
+
+    <!--物理属性-->
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0.06" />
+      <mass value="0.1" />
+      <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01" />
+    </inertial>
+  </link>
+
+  <!--arm5_linkとarm6_linkを繋ぐジョイント-->
+  <joint name="arm6_joint" type="revolute">
+    <parent link="arm5_link" />
+    <child link="arm6_link" />
+    <origin xyz="0 0.0456 0.03792" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+    <limit effort="30" lower="-3.05" upper="3.05" velocity="1.5" />
+  </joint>
+
+  <!--arm6_link-->
+  <link name="arm6_link">
+    <!--可視化情報-->
+    <visual>
+      <origin xyz="0.0 0 0.0" rpy="1.57075 0 0" />
+      <geometry>
+        <cylinder length="0.005" radius="0.02" />
+      </geometry>
+      <material name="dark blue">
+        <color rgba="0.1 0.1 0.9 1" />
+      </material>
+    </visual>
+
+    <!--衝突属性-->
+    <collision>
+      <origin xyz="0.0 0 0.0" rpy="1.57075 0 0" />
+      <geometry>
+        <cylinder length="0.005" radius="0.02" />
+      </geometry>
+    </collision>
+
+    <!--物理属性-->
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0.06" />
+      <mass value="0.1" />
+      <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01" />
+    </inertial>
+  </link>
+
+</robot>
