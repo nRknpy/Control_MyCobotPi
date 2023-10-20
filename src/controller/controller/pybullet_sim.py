@@ -2,6 +2,7 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Joy
 from mycobot_msg.msg import MyCobotMsg
+import pandas
 import pybullet as p
 import math
 from datetime import datetime
@@ -79,7 +80,7 @@ class PyBulletSim(Node):
 
         p.stepSimulation()
         action = self.joy2action(msg)
-        self.get_logger().info(f'{action}')
+        # self.get_logger().info(f'{action}')
         # print(self.pos)
 
         if action == 'stop':

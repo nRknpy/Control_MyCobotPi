@@ -25,6 +25,7 @@ setup(
             'controller_listener_ = controller.controller_listener_:main',
             'controller_sim = controller.controller_sim:main',
             'controller_mc = controller.controller_mc:main',
+            'pybullet_sim = controller.pybullet_sim:main',
         ],
     },
 )

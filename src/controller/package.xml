@@ -18,5 +18,6 @@
     <build_type>ament_python</build_type>
     <exec_depend>rclpy</exec_depend>
     <exec_depend>sensor_msgs</exec_depend>
+    <exec_depend>python3-pybullet-pip</exec_depend>
   </export>
 </package>

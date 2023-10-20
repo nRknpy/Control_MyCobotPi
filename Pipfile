@@ -17,6 +17,7 @@ torchaudio = "*"
 pillow = "*"
 matplotlib = "*"
 pybullet = "*"
+pandas = "*"
 
 [dev-packages]
 
@@ -26,3 +27,4 @@ python_version = "3.8"
 [scripts]
 run_mc = "ros2 launch src/launch/mycobot_launch.py"
 run_master = "ros2 launch src/launch/master_launch.py"
+set_pythonpath = "export PYTHONPATH=$PYTHONPATH:/home/rkn/.local/share/virtualenvs/Control_MyCobotPi-s6-X_89i/lib/python3.8/site-packages"
