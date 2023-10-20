@@ -11,5 +11,6 @@ def generate_launch_description():
         Node(
             package='controller',
             executable='controller_mc',
+            respawn='true',
         )
     ])

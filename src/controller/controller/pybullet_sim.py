@@ -1,16 +1,21 @@
 import rclpy
 from rclpy.node import Node
+from sensor_msgs.msg import Joy
 from mycobot_msg.msg import MyCobotMsg
 import pybullet as p
 import math
+from datetime import datetime
 
 
 class PyBulletSim(Node):
     def __init__(self):
         super().__init__('pybullet_sim')
 
+        self.listener = self.create_subscription(
+            Joy, 'joy', self.on_subscribe, 10)
+
         self.pub = self.create_publisher(MyCobotMsg, '/radians', 10)
-        self.timer = self.create_timer(0.02, self.run)
+        # self.timer = self.create_timer(0.02, self.run)
 
         clid = p.connect(p.GUI)
         start_pos = [0, 0, 0]
@@ -18,9 +23,21 @@ class PyBulletSim(Node):
         self.mycobot_id = p.loadURDF("./urdf/mycobot_npaka.urdf",
                                      start_pos, start_orientation)
 
-        default_pos = [0., 0.052, -0.534, -1.934, 0.923, -0.031, -2.428]
+        # self.orn = p.getQuaternionFromEuler(
+        #     [-math.pi / 2.3, math.pi / 8., -math.pi / 4.])
+        self.orn = p.getQuaternionFromEuler(
+            [-math.pi / 2.3, 0., -math.pi / 4.])
+        self.default_pos = [-0.012, -0.331, -2.419, 1.239, 0.032, 0.747]
+        self.home_pos = [-0.005, 1.916, -2.655, -0.561, -0.006, 0.745]
         for i in range(6):
-            p.resetJointState(self.mycobot_id, i, default_pos[i])
+            p.resetJointState(self.mycobot_id, i+1, self.default_pos[i])
+        self.angles = self.default_pos
+        self.pos = list(p.getLinkState(self.mycobot_id, 6)[4])
+        self.gripper_value = 100
+
+        self.delta = 0.01
+        self.prev_time = datetime.now()
+
         self.t = 0
         self.hasPrevPose = 0
         self.prevPose = None
@@ -36,9 +53,9 @@ class PyBulletSim(Node):
         if joy.buttons[1]:
             return 'grip_on'
         if joy.axes[0] > 0.2 and -joy.axes[0] < joy.axes[1] < joy.axes[0]:
-            return 'x+'
-        if joy.axes[0] < -0.2 and joy.axes[0] < joy.axes[1] < -joy.axes[0]:
             return 'x-'
+        if joy.axes[0] < -0.2 and joy.axes[0] < joy.axes[1] < -joy.axes[0]:
+            return 'x+'
         if joy.axes[1] > 0.2 and -joy.axes[1] < joy.axes[0] < joy.axes[1]:
             return 'y+'
         if joy.axes[1] < -0.2 and joy.axes[1] < joy.axes[0] < -joy.axes[1]:
@@ -47,131 +64,126 @@ class PyBulletSim(Node):
             return 'z+'
         if joy.axes[4] < -0.2 and joy.axes[4] < joy.axes[3] < -joy.axes[4]:
             return 'z-'
-        if joy.axes[3] > 0.2 and -joy.axes[3] < joy.axes[4] < joy.axes[3]:
-            return 'rx+'
-        if joy.axes[3] < -0.2 and joy.axes[3] < joy.axes[4] < -joy.axes[3]:
-            return 'rx-'
-        # if joy.axes[0] > 0.2:
-        #     return 'x+'
-        # if joy.axes[0] < -0.2:
-        #     return 'x-'
+        # if joy.axes[3] > 0.2 and -joy.axes[3] < joy.axes[4] < joy.axes[3]:
+        #     return 'rx+'
+        # if joy.axes[3] < -0.2 and joy.axes[3] < joy.axes[4] < -joy.axes[3]:
+        #     return 'rx-'
         return 'stop'
 
     def on_subscribe(self, msg):
+        now = datetime.now()
+        d = (now - self.prev_time).microseconds * 1e-3
+        self.prev_time = now
+
+        delta = self.delta * d / 10.
+
+        p.stepSimulation()
         action = self.joy2action(msg)
         self.get_logger().info(f'{action}')
-
-        # print(self.mc.get_radians())
-        # print(self.coords)
+        # print(self.pos)
 
         if action == 'stop':
-            # self.sim.send_angles(self.angles)
-            mc_angles = self.sim.convert_joint_angles_sim_to_mc(self.angles)
+            for i in range(6):
+                p.setJointMotorControl2(bodyIndex=self.mycobot_id,
+                                        jointIndex=i + 1,
+                                        controlMode=p.POSITION_CONTROL,
+                                        targetPosition=self.angles[i],
+                                        targetVelocity=0,
+                                        force=500,
+                                        positionGain=0.2,
+                                        velocityGain=1.5)
+            self.pos = list(p.getLinkState(self.mycobot_id, 6)[4])
+            msg = MyCobotMsg()
+            msg.joints = self.angles
+            msg.gripper = self.gripper_value
+            self.pub.publish(msg)
+            return
 
-        elif action == 'move_to_default':
-            # self.mc.send_angles([-0.17, -10, -133.24, 60.99, 0.17, 50.36], self.speed)
-            self.sim.send_angles(self.sim.convert_joint_angles_mc_to_sim(
-                [0.052, -0.534, -1.934, 0.923, -0.031, -2.428]))
-            self.angles = self.sim.get_angles()
-            mc_angles = self.sim.convert_joint_angles_sim_to_mc(self.angles)
-            self.coords = self.sim.forward_kinematics()
+        if action == 'move_to_default':
+            for i in range(6):
+                p.setJointMotorControl2(bodyIndex=self.mycobot_id,
+                                        jointIndex=i + 1,
+                                        controlMode=p.POSITION_CONTROL,
+                                        targetPosition=self.default_pos[i],
+                                        targetVelocity=0,
+                                        force=500,
+                                        positionGain=0.2,
+                                        velocityGain=1.5)
+            self.angles = self.default_pos
+            self.gripper = 100
+            self.pos = list(p.getLinkState(self.mycobot_id, 6)[4])
+            msg = MyCobotMsg()
+            msg.joints = self.angles
+            msg.gripper = self.gripper_value
+            self.pub.publish(msg)
+            return
         elif action == 'move_to_home':
-            self.sim.send_angles(self.sim.convert_joint_angles_mc_to_sim(
-                [0.024, 2.172, -2.6, -0.604, -0.143, 0.928]))
-            self.angles = self.sim.get_angles()
-            mc_angles = self.sim.convert_joint_angles_sim_to_mc(self.angles)
-            self.coords = self.sim.forward_kinematics()
+            for i in range(6):
+                p.setJointMotorControl2(bodyIndex=self.mycobot_id,
+                                        jointIndex=i + 1,
+                                        controlMode=p.POSITION_CONTROL,
+                                        targetPosition=self.home_pos[i],
+                                        targetVelocity=0,
+                                        force=500,
+                                        positionGain=0.2,
+                                        velocityGain=1.5)
+            self.angles = self.home_pos
+            self.gripper = 100
+            self.pos = list(list(p.getLinkState(self.mycobot_id, 6)[4]))
+            msg = MyCobotMsg()
+            msg.joints = self.angles
+            msg.gripper = self.gripper_value
+            self.pub.publish(msg)
+            return
 
         elif action == 'grip_on':
             self.gripper_value = 100
-            mc_angles = self.sim.convert_joint_angles_sim_to_mc(self.angles)
+            msg = MyCobotMsg()
+            msg.joints = self.angles
+            msg.gripper = self.gripper_value
+            self.pub.publish(msg)
         elif action == 'grip_off':
             self.gripper_value = 0
-            mc_angles = self.sim.convert_joint_angles_sim_to_mc(self.angles)
+            msg = MyCobotMsg()
+            msg.joints = self.angles
+            msg.gripper = self.gripper_value
+            self.pub.publish(msg)
 
         elif action == 'x-':
-            cache = self.coords.copy()
-            self.coords[1] -= self.delta
-            if self.validate_coords(self.coords):
-                self.angles = self.sim.inverse_kinematics(self.coords)
-                mc_angles = self.sim.convert_joint_angles_sim_to_mc(
-                    self.angles)
-                self.coords = self.sim.forward_kinematics()
-            else:
-                self.coords = cache
-                mc_angles = self.sim.convert_joint_angles_sim_to_mc(
-                    self.angles)
+            self.pos[0] -= delta
         elif action == 'x+':
-            cache = self.coords.copy()
-            self.coords[1] += self.delta
-            if self.validate_coords(self.coords):
-                self.angles = self.sim.inverse_kinematics(self.coords)
-                mc_angles = self.sim.convert_joint_angles_sim_to_mc(
-                    self.angles)
-                self.coords = self.sim.forward_kinematics()
-            else:
-                self.coords = cache
-                mc_angles = self.sim.convert_joint_angles_sim_to_mc(
-                    self.angles)
+            self.pos[0] += delta
         elif action == 'y+':
-            cache = self.coords.copy()
-            self.coords[0] += self.delta
-            if self.validate_coords(self.coords):
-                self.angles = self.sim.inverse_kinematics(self.coords)
-                mc_angles = self.sim.convert_joint_angles_sim_to_mc(
-                    self.angles)
-                self.coords = self.sim.forward_kinematics()
-            else:
-                self.coords = cache
-                mc_angles = self.sim.convert_joint_angles_sim_to_mc(
-                    self.angles)
+            self.pos[1] += delta
         elif action == 'y-':
-            cache = self.coords.copy()
-            self.coords[0] -= self.delta
-            if self.validate_coords(self.coords):
-                self.angles = self.sim.inverse_kinematics(self.coords)
-                mc_angles = self.sim.convert_joint_angles_sim_to_mc(
-                    self.angles)
-                self.coords = self.sim.forward_kinematics()
-            else:
-                self.coords = cache
-                mc_angles = self.sim.convert_joint_angles_sim_to_mc(
-                    self.angles)
+            self.pos[1] -= delta
         elif action == 'z+':
-            cache = self.coords.copy()
-            self.coords[2] += self.delta
-            if self.validate_coords(self.coords):
-                self.angles = self.sim.inverse_kinematics(self.coords)
-                mc_angles = self.sim.convert_joint_angles_sim_to_mc(
-                    self.angles)
-                self.coords = self.sim.forward_kinematics()
-            else:
-                self.coords = cache
-                mc_angles = self.sim.convert_joint_angles_sim_to_mc(
-                    self.angles)
+            self.pos[2] += delta
         elif action == 'z-':
-            cache = self.coords.copy()
-            self.coords[2] -= self.delta
-            if self.validate_coords(self.coords):
-                self.angles = self.sim.inverse_kinematics(self.coords)
-                mc_angles = self.sim.convert_joint_angles_sim_to_mc(
-                    self.angles)
-                self.coords = self.sim.forward_kinematics()
-            else:
-                self.coords = cache
-                mc_angles = self.sim.convert_joint_angles_sim_to_mc(
-                    self.angles)
-        # elif action == 'rx+':
-        #     self.coords[3] += 2
-        #     self.mc.send_radians(self.angles, self.speed)
-        #     self.angles = self.mc.get_radians()
-        # elif action == 'rx-':
-        #     self.coords[3] -= 2
-        #     self.mc.send_radians(self.angles, self.speed)
-        #     self.angles = self.mc.get_radians()
-        else:
-            mc_angles = mc_angles = self.sim.convert_joint_angles_sim_to_mc(
-                self.angles)
+            self.pos[2] -= delta
+
+        angles = p.calculateInverseKinematics(self.mycobot_id,
+                                              6,
+                                              self.pos,
+                                              self.orn)
+        for i in range(6):
+            p.setJointMotorControl2(bodyIndex=self.mycobot_id,
+                                    jointIndex=i + 1,
+                                    controlMode=p.POSITION_CONTROL,
+                                    targetPosition=angles[i],
+                                    targetVelocity=0,
+                                    force=500,
+                                    positionGain=0.2,
+                                    velocityGain=1.5)
+        self.angles = []
+        for i in range(6):
+            self.angles.append(p.getJointState(self.mycobot_id, i+1)[0])
+        self.pos = list(p.getLinkState(self.mycobot_id, 6)[4])
+
+        msg = MyCobotMsg()
+        msg.joints = self.angles
+        msg.gripper = self.gripper_value
+        self.pub.publish(msg)
 
     def run(self):
         self.t = self.t + 0.01
@@ -179,7 +191,7 @@ class PyBulletSim(Node):
         p.stepSimulation()
 
         for i in range(1):
-            pos = [0.15 * math.cos(4*self.t), 0.2, 0.2 +
+            pos = [0.15 * math.cos(4*self.t), 0.17, 0.25 +
                    0.1 * math.sin(4*self.t)]
             orn = p.getQuaternionFromEuler(
                 [-math.pi / 2.3, math.pi / 8., -math.pi / 4.])
@@ -202,7 +214,7 @@ class PyBulletSim(Node):
         radians = []
         for i in range(6):
             radians.append(p.getJointState(self.mycobot_id, i+1)[0])
-        print(radians)
+        # print(radians)
         if (self.hasPrevPose):
             p.addUserDebugLine(self.prevPose, pos, [0, 0, 0.3], 1, 15)
             p.addUserDebugLine(self.prevPose1, ls[4], [1, 0, 0], 1, 15)
@@ -210,7 +222,7 @@ class PyBulletSim(Node):
         self.prevPose1 = ls[4]
         self.hasPrevPose = 1
 
-        if pos[2] < 0.2:
+        if pos[2] < 0.25:
             gripper = 0
         else:
             gripper = 100
@@ -219,7 +231,7 @@ class PyBulletSim(Node):
         msg.joints = radians
         msg.gripper = gripper
         self.pub.publish(msg)
-        # print(ls)
+        print(ls[4])
 
 
 def main():

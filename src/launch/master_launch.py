@@ -7,6 +7,7 @@ def generate_launch_description():
         Node(
             package='joy_linux',
             executable='joy_linux_node',
+            parameters=[{'autorepeat_rate': 1000}]
         ),
         Node(
             package='sensor',
@@ -14,6 +15,6 @@ def generate_launch_description():
         ),
         Node(
             package='controller',
-            executable='controller_sim',
+            executable='pybullet_sim',
         )
     ])
