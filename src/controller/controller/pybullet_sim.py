@@ -27,7 +27,7 @@ class PyBulletSim(Node):
         # self.orn = p.getQuaternionFromEuler(
         #     [-math.pi / 2.3, math.pi / 8., -math.pi / 4.])
         self.orn = p.getQuaternionFromEuler(
-            [-math.pi / 2.3, 0., -math.pi / 4.])
+            [-math.pi / 3, 0., -math.pi / 4.])
         self.default_pos = [-0.012, -0.331, -2.419, 1.239, 0.032, 0.747]
         self.home_pos = [-0.005, 1.916, -2.655, -0.561, -0.006, 0.745]
         for i in range(6):
@@ -46,30 +46,42 @@ class PyBulletSim(Node):
 
     def joy2action(self, joy):
         if joy.buttons[5]:
-            return 'move_to_default'
+            return 'move_to_default', False
         if joy.buttons[10]:
-            return 'move_to_home'
+            return 'move_to_home', False
         if joy.buttons[0]:
-            return 'grip_off'
+            return 'grip_off', False
         if joy.buttons[1]:
-            return 'grip_on'
+            return 'grip_on', False
         if joy.axes[0] > 0.2 and -joy.axes[0] < joy.axes[1] < joy.axes[0]:
-            return 'x-'
+            if joy.axes[0] > 0.5:
+                return 'x-'
+            return 'x-', False
         if joy.axes[0] < -0.2 and joy.axes[0] < joy.axes[1] < -joy.axes[0]:
-            return 'x+'
+            if joy.axes[0] < -0.5:
+                return 'x+', True
+            return 'x+', False
         if joy.axes[1] > 0.2 and -joy.axes[1] < joy.axes[0] < joy.axes[1]:
-            return 'y+'
+            if joy.axes[1] > 0.5:
+                return 'y+', True
+            return 'y+', False
         if joy.axes[1] < -0.2 and joy.axes[1] < joy.axes[0] < -joy.axes[1]:
-            return 'y-'
+            if joy.axes[1] < -0.5:
+                return 'y-', True
+            return 'y-', False
         if joy.axes[4] > 0.2 and -joy.axes[4] < joy.axes[3] < joy.axes[4]:
-            return 'z+'
+            if joy.axes[4] > 0.5:
+                return 'z+', True
+            return 'z+', False
         if joy.axes[4] < -0.2 and joy.axes[4] < joy.axes[3] < -joy.axes[4]:
-            return 'z-'
+            if joy.axes[4] < -0.5:
+                return 'z-', True
+            return 'z-', False
         # if joy.axes[3] > 0.2 and -joy.axes[3] < joy.axes[4] < joy.axes[3]:
         #     return 'rx+'
         # if joy.axes[3] < -0.2 and joy.axes[3] < joy.axes[4] < -joy.axes[3]:
         #     return 'rx-'
-        return 'stop'
+        return 'stop', False
 
     def on_subscribe(self, msg):
         now = datetime.now()
@@ -77,9 +89,11 @@ class PyBulletSim(Node):
         self.prev_time = now
 
         delta = self.delta * d / 10.
+        if not fast:
+            delta *= 0.5
 
         p.stepSimulation()
-        action = self.joy2action(msg)
+        action, fast = self.joy2action(msg)
         # self.get_logger().info(f'{action}')
         # print(self.pos)
 
