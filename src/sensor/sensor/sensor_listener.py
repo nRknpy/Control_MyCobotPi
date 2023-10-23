@@ -1,6 +1,8 @@
+import os
 import rclpy
 from rclpy.node import Node
 from message_filters import ApproximateTimeSynchronizer, Subscriber
+from sensor_msgs.msg import Joy
 from sensor_msgs.msg import Image
 from mycobot_msg.msg import MyCobotMsg
 from cv_bridge import CvBridge
@@ -29,6 +31,10 @@ class SensorListener(Node):
         self.joints = []
         self.imgs = []
 
+        self.rec = False
+        self.idx = 0
+        self.img_idx = 0
+
         qos = rclpy.qos.QoSProfile(depth=10)
         qos.reliability = rclpy.qos.QoSReliabilityPolicy.BEST_EFFORT
 
@@ -42,17 +48,35 @@ class SensorListener(Node):
         self.ts = ApproximateTimeSynchronizer(
             [self.img_sub, self.joint_sub],
             queue_size,
-            0.01,
+            0.1,
             allow_headerless=True
         )
         self.ts.registerCallback(self.callback)
 
+        self.joy_listener = self.create_subscription(
+            Joy, 'joy', self.joy_callback, 10)
+
+    def joy_callback(self, joy):
+        if joy.buttons[9]:
+            self.get_logger().info("----------record START----------")
+            if self.rec == False:
+                self.idx += 1
+                self.img_idx = 0
+                os.makedirs(f'./data/images/{self.idx}', exist_ok=True)
+            self.rec = True
+        if joy.buttons[8]:
+            self.get_logger().info("----------record STOP----------")
+            if self.rec == True:
+                np_joints = np.array(self.joints)
+                np.save(f'./data/joints/{self.idx}.npy', np_joints)
+            self.rec = False
+
     def callback(self, img_msg, joint_msg):
-        self.get_logger().info(
-            f'{np.array(joint_msg.joints)}, {joint_msg.gripper}')
-        # self.joints.append(np.array(joint_msg.joints))
+        joints = list(joint_msg.joints) + [joint_msg.gripper]
         img = CvBridge().imgmsg_to_cv2(img_msg)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+        self.get_logger().info(str(joints))
 
         height, width, _ = img.shape
         size = min(height, width)
@@ -61,7 +85,11 @@ class SensorListener(Node):
         img = img[y:y+size, x:x+size]
         cv2.rotate(img, cv2.ROTATE_180)
 
-        cv2.imwrite('./data/image.png', img)
+        if self.rec:
+            self.joints.append(joints)
+            cv2.imwrite(f'./data/images/{self.idx}/{self.img_idx}.png', img)
+            self.img_idx += 1
+
         cv2.imshow('Image', img)
         cv2.waitKey(1)
 

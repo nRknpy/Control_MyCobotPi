@@ -27,7 +27,7 @@ class PyBulletSim(Node):
         # self.orn = p.getQuaternionFromEuler(
         #     [-math.pi / 2.3, math.pi / 8., -math.pi / 4.])
         self.orn = p.getQuaternionFromEuler(
-            [-math.pi / 3, 0., -math.pi / 4.])
+            [-math.pi / 2, 0., -math.pi / 4.])
         self.default_pos = [-0.012, -0.331, -2.419, 1.239, 0.032, 0.747]
         self.home_pos = [-0.005, 1.916, -2.655, -0.561, -0.006, 0.745]
         for i in range(6):
@@ -55,7 +55,7 @@ class PyBulletSim(Node):
             return 'grip_on', False
         if joy.axes[0] > 0.2 and -joy.axes[0] < joy.axes[1] < joy.axes[0]:
             if joy.axes[0] > 0.5:
-                return 'x-'
+                return 'x-', True
             return 'x-', False
         if joy.axes[0] < -0.2 and joy.axes[0] < joy.axes[1] < -joy.axes[0]:
             if joy.axes[0] < -0.5:
@@ -88,12 +88,14 @@ class PyBulletSim(Node):
         d = (now - self.prev_time).microseconds * 1e-3
         self.prev_time = now
 
+        action, fast = self.joy2action(msg)
+
         delta = self.delta * d / 10.
         if not fast:
-            delta *= 0.5
+            delta *= 0.2
 
         p.stepSimulation()
-        action, fast = self.joy2action(msg)
+
         # self.get_logger().info(f'{action}')
         # print(self.pos)
 
