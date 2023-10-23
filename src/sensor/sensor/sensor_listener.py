@@ -48,7 +48,7 @@ class SensorListener(Node):
         self.ts = ApproximateTimeSynchronizer(
             [self.img_sub, self.joint_sub],
             queue_size,
-            0.1,
+            0.01,
             allow_headerless=True
         )
         self.ts.registerCallback(self.callback)

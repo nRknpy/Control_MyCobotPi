@@ -27,13 +27,14 @@ class PyBulletSim(Node):
         # self.orn = p.getQuaternionFromEuler(
         #     [-math.pi / 2.3, math.pi / 8., -math.pi / 4.])
         self.orn = p.getQuaternionFromEuler(
-            [-math.pi / 2, 0., -math.pi / 4.])
+            [-math.pi / 2, math.pi / 16, -math.pi / 4.])
         self.default_pos = [-0.012, -0.331, -2.419, 1.239, 0.032, 0.747]
         self.home_pos = [-0.005, 1.916, -2.655, -0.561, -0.006, 0.745]
         for i in range(6):
             p.resetJointState(self.mycobot_id, i+1, self.default_pos[i])
         self.angles = self.default_pos
         self.pos = list(p.getLinkState(self.mycobot_id, 6)[4])
+        self.r = -math.pi / 4.
         self.gripper_value = 100
 
         self.delta = 0.01
@@ -78,9 +79,9 @@ class PyBulletSim(Node):
                 return 'z-', True
             return 'z-', False
         # if joy.axes[3] > 0.2 and -joy.axes[3] < joy.axes[4] < joy.axes[3]:
-        #     return 'rx+'
+        #     return 'r+'
         # if joy.axes[3] < -0.2 and joy.axes[3] < joy.axes[4] < -joy.axes[3]:
-        #     return 'rx-'
+        #     return 'r-'
         return 'stop', False
 
     def on_subscribe(self, msg):
