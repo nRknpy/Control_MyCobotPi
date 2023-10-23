@@ -1,5 +1,5 @@
-*
 !.gitignore
-!*.gif
-!joints
-!images
+/joints/**
+/images/**
+!/joints/**/
+!/images/**/
