@@ -2,6 +2,7 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Joy
 from mycobot_msg.msg import MyCobotMsg
+import pymycobot
 from pymycobot import MyCobot, PI_PORT, PI_BAUD
 import time
 import atexit
@@ -10,6 +11,7 @@ import atexit
 class ControllerMc(Node):
     def __init__(self):
         super().__init__('controller_mc')
+        self.get_logger().info(f"{pymycobot.__version__}")
 
         self.mc = MyCobot(PI_PORT, PI_BAUD)
         self.angles = self.mc.get_angles()
