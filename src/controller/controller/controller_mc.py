@@ -16,6 +16,7 @@ class ControllerMc(Node):
 
         self.speed = 100
         self.gripper_value = 0
+        self.mc.set_encoder(7, 4000, self.speed)
 
         qos = rclpy.qos.QoSProfile(depth=10)
         qos.reliability = rclpy.qos.QoSReliabilityPolicy.BEST_EFFORT
@@ -29,7 +30,12 @@ class ControllerMc(Node):
         radians = msg.joints
         gripper = msg.gripper
         self.mc.send_radians(radians, self.speed)
-        self.mc.set_gripper_value(gripper, 50)
+        if gripper > 50:
+            gripper = 4000
+        else:
+            gripper = 5
+        self.mc.set_encoder(7, gripper, self.speed)
+        # self.mc.set_gripper_value(gripper, 50)
         # time.sleep(0.1)
 
         # while True:
