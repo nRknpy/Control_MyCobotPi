@@ -15,5 +15,5 @@ def generate_launch_description():
         Node(
             package='controller',
             executable='pybullet_sim',
-        )
+        ),
     ])

@@ -7,7 +7,6 @@ def generate_launch_description():
         Node(
             package='realsense2_camera',
             executable='realsense2_camera_node',
-            parameters=[{'tf_publish_rate': 10.0}]
         ),
         Node(
             package='controller',

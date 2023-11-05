@@ -18,6 +18,15 @@ pillow = "*"
 matplotlib = "*"
 pybullet = "*"
 pandas = "*"
+scipy = "*"
+gdown = "*"
+ipdb = "*"
+tensorboard = "*"
+torchinfo = "*"
+tqdm = "*"
+scikit-learn = "*"
+eipl = {editable = true, path = "./eipl"}
+pytorch-memlab = "*"
 
 [dev-packages]
 ipykernel = "*"
