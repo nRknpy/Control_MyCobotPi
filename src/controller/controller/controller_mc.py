@@ -11,7 +11,8 @@ import atexit
 class ControllerMc(Node):
     def __init__(self):
         super().__init__('controller_mc')
-        self.get_logger().info(f"{pymycobot.__version__}")
+        self.get_logger().info(
+            f"--------------------------------------------{pymycobot.__version__}-----------------------------------------------------")
 
         self.mc = MyCobot(PI_PORT, PI_BAUD)
         self.angles = self.mc.get_angles()
