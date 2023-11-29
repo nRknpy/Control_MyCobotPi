@@ -39,7 +39,7 @@ class ControllerMc(Node):
             # gripper = 5
             gripper = 0
         # self.mc.set_encoder(7, gripper, 100)
-        self.mc.set_gripper_value(gripper, 50)
+        self.mc.set_gripper_value(gripper, 100, 1)
         # time.sleep(0.1)
 
         # while True:
