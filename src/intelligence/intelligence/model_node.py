@@ -7,6 +7,7 @@ from sensor_msgs.msg import Joy, Image
 from mycobot_msg.msg import MyCobotMsg
 from cv_bridge import CvBridge
 import cv2
+from PIL import Image as PImage
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
@@ -49,7 +50,6 @@ class ModelNode(Node):
         self.timer = self.create_timer(0.10, self.callback)
 
         self.pub = self.create_publisher(MyCobotMsg, '/radians', 10)
-        print('aaaa')
         msg = MyCobotMsg()
         msg.joints = [-0.005, 1.916, -2.655, -0.561, -0.006, 0.745]
         msg.gripper = 100
@@ -73,8 +73,7 @@ class ModelNode(Node):
         img = CvBridge().imgmsg_to_cv2(img)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img_norm, img_raw = self._img_process(img)
-        img_norm = np.transpose(img_norm, (2, 0, 1))
-        img = torch.from_numpy(np.array(img_norm))
+        img = torch.from_numpy(img_norm).float()
         img = img.unsqueeze(0)
 
         self.img = self.input_param * img + \
@@ -106,9 +105,12 @@ class ModelNode(Node):
         size = min(height, width)
         x = (width - size) // 2
         y = (height - size) // 2
-        img = img[y:y+size, x:x+size]
-        cv2.rotate(img, cv2.ROTATE_180)
-        img = cv2.resize(img, (self.img_size, self.img_size))
+        img = img[y:y + size, x:x + size]
+        # img = cv2.rotate(img, cv2.ROTATE_180)
+        img = PImage.fromarray(img)
+        img = img.resize(self.img_size, self.img_size)
+        img = np.array(img)
+        img = np.transpose(img, (2, 0, 1))
         img_norm = normalization(img.astype(np.float32), (0., 255.), (0., 1.))
         return img_norm, img
 

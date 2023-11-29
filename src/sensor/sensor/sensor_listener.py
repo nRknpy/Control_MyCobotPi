@@ -64,17 +64,18 @@ class SensorListener(Node):
 
     def joy_callback(self, joy):
         if joy.buttons[9]:
-            self.get_logger().info("----------record START----------\n"*10)
             if self.rec == False:
+                self.get_logger().info("----------record START----------\n")
+                self.get_logger().info('fhjasdkfhdajskl')
                 self.idx += 1
                 self.img_idx = 0
+                self.end_rec = False
                 os.makedirs(os.path.join(
                     self.data_dir, 'joints'), exist_ok=True)
                 os.makedirs(os.path.join(self.data_dir,
                             f'images/{self.idx}'), exist_ok=True)
             self.rec = True
         if joy.buttons[8]:
-            self.get_logger().info("----------record will STOP----------\n"*10)
             self.end_rec = True
 
     def listener_callback(self, img_msg, joint_msg):
@@ -93,8 +94,8 @@ class SensorListener(Node):
         size = min(height, width)
         x = (width - size) // 2
         y = (height - size) // 2
-        img = img[y:y+size, x:x+size]
-        cv2.rotate(img, cv2.ROTATE_180)
+        img = img[y:y + size, x:x + size]
+        img = cv2.rotate(img, cv2.ROTATE_180)
 
         if self.rec:
             self.get_logger().info(str(joints))
@@ -102,23 +103,23 @@ class SensorListener(Node):
             cv2.imwrite(os.path.join(self.data_dir,
                         f'images/{self.idx}/{self.img_idx}.png'), img)
             self.img_idx += 1
-            if self.end_rec and self.img_idx == 200:
+            if self.end_rec:
                 np_joints = np.array(self.joints)
                 np.save(os.path.join(self.data_dir,
                         f'joints/{self.idx}.npy'), np_joints)
                 self.joints = []
                 self.rec = False
                 self.end_rec = False
-                self.get_logger().info("----------record STOP----------\n"*10)
-            elif self.img_idx == 200:
-                np_joints = np.array(self.joints)
-                np.save(os.path.join(self.data_dir,
-                        f'joints/{self.idx}.npy'), np_joints)
-                self.joints = []
-                self.idx += 1
-                os.makedirs(os.path.join(self.data_dir,
-                            f'images/{self.idx}'), exist_ok=True)
-                self.img_idx = 0
+                self.get_logger().info("----------record STOP----------\n")
+            # elif self.img_idx == 200:
+            #     np_joints = np.array(self.joints)
+            #     np.save(os.path.join(self.data_dir,
+            #             f'joints/{self.idx}.npy'), np_joints)
+            #     self.joints = []
+            #     self.idx += 1
+            #     os.makedirs(os.path.join(self.data_dir,
+            #                 f'images/{self.idx}'), exist_ok=True)
+            #     self.img_idx = 0
 
         cv2.imshow('Image', img)
         cv2.waitKey(1)
