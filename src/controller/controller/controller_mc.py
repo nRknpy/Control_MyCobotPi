@@ -33,11 +33,13 @@ class ControllerMc(Node):
         gripper = msg.gripper
         self.mc.send_radians(radians, self.speed)
         if gripper > 50:
-            gripper = 3000
+            # gripper = 3000
+            gripper = 100
         else:
-            gripper = 5
-        self.mc.set_encoder(7, gripper, 100)
-        # self.mc.set_gripper_value(gripper, 50)
+            # gripper = 5
+            gripper = 0
+        # self.mc.set_encoder(7, gripper, 100)
+        self.mc.set_gripper_value(gripper, 50)
         # time.sleep(0.1)
 
         # while True:
