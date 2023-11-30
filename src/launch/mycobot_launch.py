@@ -7,6 +7,12 @@ def generate_launch_description():
         Node(
             package='realsense2_camera',
             executable='realsense2_camera_node',
+            parameters=[{'serial_no': '_138422073197'}],
+        ),
+        Node(
+            package='realsense2_camera',
+            executable='realsense2_camera_node',
+            parameters=[{'serial_no': '_128422271786'}],
         ),
         Node(
             package='controller',
